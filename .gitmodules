@@ -1,0 +1,4 @@
+[submodule "Submodules/pyimgui"]
+	path = Submodules/pyimgui
+	url = https://github.com/pyimgui/pyimgui
+	branch = docking

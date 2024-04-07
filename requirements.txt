@@ -1,0 +1,21 @@
+Cython==0.29.28
+debugpy>=1.6.6
+esper>=2.0
+glfw>=2.1.0
+multipledispatch>=0.6.0
+numpy>=1.21.0
+pybind11
+Pillow>=8.1.0
+PyOpenGL>=3.1.5
+PyWavefront>=1.3.3
+pyrr>=0.10.3
+Panda3D>=1.10.11
+PyYAML>=6.0
+spdlog>=2.0.4
+watchdog>=3.0.0
+
+pyinstaller>=4.7        # Only for building
+
+# You also need docking branch of imgui
+# Know how to download it from installing
+# section on https://HotShot0901.github.io/PIDocumentation
