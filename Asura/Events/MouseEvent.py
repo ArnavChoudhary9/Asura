@@ -1,7 +1,7 @@
 from .Event import Event, EventType, EventCategory
 
 class MouseEvent(Event):
-    def __init__(self) -> None: pass
+    def __init__(self) -> None: ...
     @property
     def CategoryFlags(self) -> int: return EventCategory.Mouse | EventCategory.Input
 

@@ -5,7 +5,7 @@ Contains Events related to the Application and Window
 from .Event import Event, EventType, EventCategory
 
 class ApplicationEvent(Event):
-    def __init__(self) -> None: pass
+    def __init__(self) -> None: ...
 
     @property
     def CategoryFlags(self) -> int: return EventCategory.Application
@@ -28,19 +28,13 @@ class WindowResizeEvent(ApplicationEvent):
 
 class WindowCloseEvent(ApplicationEvent):
     @property
-    def EventType(self) -> int:
-        return EventType.WindowClose
-
-    def ToString(self) -> str:
-        return "<WindowCloseEvent>"
+    def EventType(self) -> int: return EventType.WindowClose
+    def ToString(self) -> str: return "<WindowCloseEvent>"
 
 class WindowFocusEvent(ApplicationEvent):
     @property
-    def EventType(self) -> int:
-        return EventType.WindowFocus
-
-    def ToString(self) -> str:
-        return "<WindowFocusEvent>"  
+    def EventType(self) -> int: return EventType.WindowFocus
+    def ToString(self) -> str: return "<WindowFocusEvent>"
 
 class WindowMovedEvent(ApplicationEvent):
     __slots__ = "__offsetX", "__offsetY"

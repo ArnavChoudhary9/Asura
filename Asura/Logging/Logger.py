@@ -1,5 +1,5 @@
 import spdlog
-from ..Constants import *
+from ..Utility import *
 
 # This will be the logger if AZ_LOGGING is disabled
 # It does not do anything, it's just a placeholder

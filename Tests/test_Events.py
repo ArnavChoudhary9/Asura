@@ -14,8 +14,8 @@ def test_KeyEvents():
     assert e.EventType == EventType.KeyPressed
     assert e.RepeatCount == 5
 
-    e = CharInputEvent('x')
-    assert e.Char == 'x'
+    e = CharInputEvent(6969)
+    assert e.Char == 6969
     assert e.EventType == EventType.CharInput
 
     e = KeyReleasedEvent(69)

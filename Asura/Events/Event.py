@@ -1,3 +1,5 @@
+from typing import Callable, Dict
+
 # This just shifts 1 to i th BIT
 def BIT(i: int) -> int:
     return int(1 << i)
@@ -7,7 +9,7 @@ class EventType:
     Null,                                                                   \
     WindowClose, WindowResize, WindowFocus, WindowMoved,                    \
     AppTick, AppUpdate, AppRender,                                          \
-    KeyPressed, KeyReleased, CharInput,                                               \
+    KeyPressed, KeyReleased, CharInput,                                     \
     MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled      \
         = range(0, 15)
 
@@ -27,25 +29,29 @@ class Event:
     Handled = False
 
     @property
-    def EventType(self) -> int: pass
+    def EventType(self) -> int: return EventType.Null
     @property
-    def Name(self) -> str: return type(self)
+    def Name(self) -> str: return str(type(self))
     @property
-    def CategoryFlags(self) -> int: pass
+    def CategoryFlags(self) -> int: return EventCategory.Null
 
-    def ToString(self) -> str: return self.GetName()
+    def ToString(self) -> str: return self.Name
     def IsInCategory(self, category: int) -> bool: return bool(self.CategoryFlags & category)
     def __repr__(self) -> str: return self.ToString()
 
 class EventDispatcher:
-    __slots__ = ("_Event",)
+    __Map: Dict[int, Callable[[Event], bool]]
 
-    def __init__(self, event: Event) -> None: self._Event = event
+    @staticmethod
+    # Just a placeholder function if nothing matches
+    def DoNothing(_: Event) -> bool: return False
 
-    def Dispach(self, func, eventType: int) -> bool:
-        if (self._Event.EventType == eventType):
-            handeled = func(self._Event)
-            self._Event.Handled = handeled
-            return True
+    def __init__(self) -> None:
+        self.__Map = {}
 
-        return False
+    def AddHandler(self, eventType: int, handler: Callable[[Event], bool]) -> None:
+        self.__Map[eventType] = handler
+
+    def Dispatch(self, event: Event) -> bool:
+        handler = self.__Map.get(event.EventType, EventDispatcher.DoNothing)
+        return handler(event)
