@@ -44,6 +44,7 @@ class EventDispatcher:
 
     @staticmethod
     # Just a placeholder function if nothing matches
+    # C005 (See GeneralConventions.txt)
     def DoNothing(_: Event) -> bool: return False
 
     def __init__(self) -> None:

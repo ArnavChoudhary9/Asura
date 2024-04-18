@@ -1,7 +1,9 @@
 from ..Utility import *
 from ..Events  import *
 
-class Layer:
+from abc import ABC, abstractmethod
+
+class Layer(ABC):
     __slots__ = "_Name", "_Enabled", "_EventDispatcher"
     _Name: str
     _Enabled: bool
@@ -30,13 +32,20 @@ class Layer:
     
     # No need to handle this in LayerStack,
     # It is called of layer itself in __init__
+    @abstractmethod
     def OnInitialize(self) -> None: ...
     # You should bind all the event handlers in this or OnStart() method
 
+    @abstractmethod
     def OnStart(self) -> None: ...
+
+    @abstractmethod
     def OnUpdate(self, dt: float) -> None: ... # C003
+
+    @abstractmethod
     def OnStop(self) -> None: ...
 
+    @abstractmethod
     def OnDestroy(self) -> None: ...
     
     # Return weather event has been handled by the Layer
@@ -48,7 +57,12 @@ class Overlay(Layer):
 
     def __str__(self) -> str:
         return "<Overlay @ {}>: {}".format(hex(id(self)), self._Name)
-    
+
+    @abstractmethod
     def OnGUIStart(self) -> None: ...
+
+    @abstractmethod
     def OnGUIRender(self) -> None: ...
+
+    @abstractmethod
     def OnGUIEnd(self) -> None: ...

@@ -1,15 +1,5 @@
 import spdlog
-from ..Utility import *
-
-# This will be the logger if AZ_LOGGING is disabled
-# It does not do anything, it's just a placeholder
-class DummyLogger:
-    def trace    (self, *args) -> None: pass
-    def info     (self, *args) -> None: pass
-    def debug    (self, *args) -> None: pass
-    def warn     (self, *args) -> None: pass
-    def error    (self, *args) -> None: pass
-    def critical (self, *args) -> None: pass
+from ..Utility import List
 
 class Logger:
     @classmethod
@@ -24,14 +14,10 @@ class Logger:
     def __init__(self, name: str, logPattern: str="%^[%T] %n: %v%$") -> None:
         self.__Name: str = name
 
-        if AZ_LOGGING:
-            self.__Logger = spdlog.SinkLogger(name, Logger.__LogSinks)
-            self.__Logger.set_pattern(logPattern)
-            self.__Logger.set_level(spdlog.LogLevel.TRACE)
-            self.__Logger.flush_on(spdlog.LogLevel.TRACE)
-        
-        # Select the "Do nothing" logger if AZ_LOGGING is disabled
-        else: self.__Logger = DummyLogger()
+        self.__Logger = spdlog.SinkLogger(name, Logger.__LogSinks)
+        self.__Logger.set_pattern(logPattern)
+        self.__Logger.set_level(spdlog.LogLevel.TRACE)
+        self.__Logger.flush_on(spdlog.LogLevel.TRACE)
 
         self.Info("Logger *{}* Initialized!", name)
 
@@ -59,8 +45,8 @@ class LoggerSubscription:
 
     Will produce::
 
-        [hh:mm:ss] A: TEST
-        [hh:mm:ss] B: TEST
+        [HH:MM:SS] A: TEST
+        [HH:MM:SS] B: TEST
     '''
 
     __slots__ = "__Subscriptions"

@@ -6,10 +6,15 @@
           choice as the client can configured the name in many places, but to make things
           simple for the client I am avoiding both the options.
 
-    -> All the tests are passing and the engine is in working state
+    -> All the tests are passing and the engine is in working state.
 
 08-04-2024:
     -> Completed Layer-System
         * TODO: Add tests for Layer System
 
-    -> All the tests are passing and the engine is in working state
+    -> All the tests are passing and the engine is in working state.
+
+15-04-2024:
+    -> Implemented the Instrumentation system.
+
+    -> All the tests are passing and the engine is in working state.
