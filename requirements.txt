@@ -15,6 +15,9 @@ watchdog>=3.0.0
 
 pyinstaller>=4.7        # Only for building
 
+# For profiling
+snakeviz
+
 # You also need docking branch of imgui
 # Which is included as a submodule.
 # To build it:

@@ -1,4 +1,4 @@
-from typing import Callable, Dict
+from typing import Callable, Dict, Protocol, runtime_checkable
 
 # This just shifts 1 to i th BIT
 def BIT(i: int) -> int:

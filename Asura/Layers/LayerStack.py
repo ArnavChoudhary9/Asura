@@ -37,16 +37,17 @@ class LayerStack:
         for layer in self.__Stack:
             if not layer.Enabled: continue
             layer.OnUpdate(dt)
-            
+
+    # Ending is done in reverse as the layers which began last should end first.
     def OnStop(self) -> None:
-        for layer in self.__Stack:
+        for layer in self.__Stack[::-1]: # Reverses the list
             if not layer.Enabled: continue
             layer.OnStop()
 
-    # Event handling
-    # Returns if event has been handled
-    # Event propogates through Overlays first, and then through Layers
-    # In the order in which they were added
+    # Event handling:
+    # Returns if event has been handled.
+    # Event propogates through Overlays first, and then through Layers,
+    # In the order in which they were added.
     def OnEvent(self, event: Event) -> bool:
         for layer in self.__Stack:
             if not layer.Enabled: continue
@@ -65,8 +66,9 @@ class LayerStack:
             if not overlay.Enabled: continue
             overlay.OnGUIRender() # type: ignore
 
+    # Ending is done in reverse as the overlays which began last should end first.
     def OnGUIEnd(self) -> None:
-        for overlay in self.Overlays:
+        for overlay in self.Overlays[::-1]: # Reverses the list
             if not overlay.Enabled: continue
             overlay.OnGUIEnd() # type: ignore
     # Only for overlays End

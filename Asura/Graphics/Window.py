@@ -1,5 +1,5 @@
 from ..Core import ASURA_VERSION_STR
-from ..Utility import DataClass, Callable, AZ_DEBUG, AZ_CONFIG_STR, AZ_VSYNC
+from ..Utility import DataClass, Callable, AZ_DEBUG, AZ_CONFIG_STR, AZ_VSYNC, Tuple
 from ..Events  import *
 from ..Logging import CoreLogger
 from .GraphicsContext import GraphicsContext, SuppurtsGraphicsContext
@@ -14,6 +14,9 @@ class WindowProperties:
     VSync: bool = AZ_VSYNC
 
     EventCallback: Callable[[Event], None] = lambda _: None # C005
+
+    @property
+    def Dimensions(self) -> Tuple[float, float]: return (self.Width, self.Height)
 
 class Window:
     GLFWInitialized: bool = False

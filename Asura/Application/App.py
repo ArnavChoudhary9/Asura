@@ -1,7 +1,9 @@
 from ..Layers import *
 from ..Events import *
 from ..Graphics import *
-from ..Utility import time as CurrentTime
+from ..GUI import *
+from ..Renderer import *
+from ..Utility import perf_counter as CurrentTime
 from ..Utility.Constants import AZ_GUI
 
 from ..Instrumentation import *
@@ -14,6 +16,7 @@ class AsuraApplication(ABC):
     _LayerStack: LayerStack
     _EventDispatcher: EventDispatcher
     _Window: Window
+    _Renderer: Renderer
 
     # States
     _IsMinimised: bool
@@ -28,14 +31,16 @@ class AsuraApplication(ABC):
 
         self._Window = Window(windowProps)
         self._Window.SetEventCallback(self.OnEvent)
+        self._Renderer = Renderer(*windowProps.Dimensions)
 
         self._EventDispatcher = EventDispatcher()
         self._EventDispatcher.AddHandler(EventType.WindowClose, self.OnApplicationClose) # type: ignore
         self._EventDispatcher.AddHandler(EventType.WindowResize, self.OnWindowResize) # type: ignore
 
         self._LayerStack = LayerStack()
+        self._LayerStack.AddOverlay(GUIInitializer(self._Window))
 
-        self._LastFrameTime = CurrentTime()
+        self._LastFrameTime = 0.0
         self._DeltaTime = 0.0
 
     @property
@@ -71,6 +76,10 @@ class AsuraApplication(ABC):
                 userTimer = Timer("Application::User::OnUpdate")
                 self.OnUpdate(self._DeltaTime)
                 userTimer.Stop()
+                
+                rendererTimer = Timer("Application::Render")
+                self._Renderer.Render()
+                rendererTimer.Stop()
 
                 if AZ_GUI:
                     guiUpdateTimer = Timer("Application::GUIUpdate")

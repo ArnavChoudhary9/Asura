@@ -16,6 +16,8 @@ class Tarka(AsuraApplication):
             1280, 720
         ))
 
+        self._LayerStack.AddOverlay(EditorLayer())
+
     def OnUpdate(self, dt: float) -> None: pass
 
 App.CreateApplication = lambda: Tarka()
