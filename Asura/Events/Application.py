@@ -4,6 +4,8 @@ Contains Events related to the Application and Window
 
 from .Event import Event, EventType, EventCategory
 
+from typing import Tuple
+
 class ApplicationEvent(Event):
     def __init__(self) -> None: ...
 
@@ -21,6 +23,8 @@ class WindowResizeEvent(ApplicationEvent):
     def Width(self) -> int: return self.__Width
     @property
     def Height(self) -> int: return self.__Height
+    @property
+    def Dimensions(self) -> Tuple[int, int]: return self.__Width, self.__Height
 
     @property
     def EventType(self) -> int: return EventType.WindowResize

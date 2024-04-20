@@ -2,22 +2,22 @@ import os, sys
 import pathlib
 
 toBuild = sys.argv[1]
-config = "d"
+config = "r"
 
 if len(sys.argv) == 3:
     config = sys.argv[2]
 
 toCollect = [
-    "PI", toBuild,
-    # "PIL", "imgui",
-    # "OpenGL", "tkinter", "debugpy",
-    # "xmlrpc"
+    "Asura", toBuild,
+    "PIL", "imgui",
+    "OpenGL", "tkinter", "debugpy",
+    "xmlrpc"
 ]
 
 hiddenImports = (
-    # "spdlog", "yaml", "pywavefront",
-    # "dataclasses", "esper", "pyrr",
-    # "cProfile", "pstats", "uuid"
+    "spdlog", "yaml", "pywavefront",
+    "dataclasses", "esper", "pyrr",
+    "cProfile", "pstats", "uuid"
 )
 
 currdir = pathlib.Path(sys.path[0]).parent
@@ -34,11 +34,8 @@ commands = [
     f"xcopy /s \"Build\\Essentials\" \"dist\\{toBuild}\"",
     f"copy \".\\imgui.ini\" \"dist\\{toBuild}\\\"",
 
-    f"mkdir \"dist\\{toBuild}\\InternalAssets\"",
-    f"xcopy /s /i \"InternalAssets\" \"dist\\{toBuild}\\InternalAssets\"",
-
-    f"mkdir \"dist\\{toBuild}\\DefaultProject\"",
-    f"xcopy /s /i \"DefaultProject\" \"dist\\{toBuild}\\DefaultProject\"",
+    f"mkdir \"dist\\{toBuild}\\Asura\\InternalAssets\"",
+    f"xcopy /s /i \"Asura\\InternalAssets\" \"dist\\{toBuild}\\Asura\\InternalAssets\"",
 
     f"mkdir \"dist\\{toBuild}\\Resources\"",
     f"xcopy /s /i \"{toBuild}\\Resources\" \"dist\\{toBuild}\\Resources\"",

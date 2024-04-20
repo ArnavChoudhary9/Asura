@@ -14,6 +14,9 @@ class Renderer:
 
         RenderCommands.INIT()
 
+    def Resize(self, width: float, height: float) -> None:
+        self.__RenderCommandList.AddCommand(RenderCommands.Resize, width, height)
+
     def Render(self) -> None:
         self.__RenderCommandList.AddCommand(RenderCommands.Clear, 0.1, 0.1, 0.1)
         self.__RenderCommandList.Execute()

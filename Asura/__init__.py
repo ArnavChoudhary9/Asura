@@ -11,8 +11,8 @@ from .Renderer    import *
 from .Instrumentation import *
 
 import imgui
-ImVec2 = imgui.Vec2
-ImVec4 = imgui.Vec4
+ImVec2 = imgui.Vec2 # type: ignore
+ImVec4 = imgui.Vec4 # type: ignore
 
 def PrintAllModulesNames():
     if AZ_DEBUG:

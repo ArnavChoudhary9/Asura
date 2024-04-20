@@ -2,8 +2,10 @@ from ..Utility import AZ_GRAPHICSLIBRARY, GraphicsLibraryENUM, Protocol, Tuple
 from ..Logging import CoreLogger
 
 class SupportsRenderCommands(Protocol):
-    @classmethod
-    def Clear(cls, *args) -> None: ...
+    @staticmethod
+    def Clear(*args) -> None: ...
+    @staticmethod
+    def Resize(x: int, y: int) -> None: ...
 
 class RenderCommands:
     __NativeAPI: SupportsRenderCommands
@@ -26,3 +28,5 @@ class RenderCommands:
 
     @staticmethod
     def Clear(*args) -> None: RenderCommands.__NativeAPI.Clear(*args)
+    @staticmethod
+    def Resize(x: int, y: int) -> None: RenderCommands.__NativeAPI.Resize(x, y)

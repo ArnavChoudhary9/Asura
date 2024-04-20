@@ -9,6 +9,7 @@ __pycache__/
 .Python
 develop-eggs/
 dist/
+releases/
 downloads/
 lib64/
 parts/
@@ -138,6 +139,11 @@ cython_debug/
 
 # Reference Code
 .ref/
+
+# Profiling
+Asura_Initialization.json
+Asura_Runtime.json
+*.prof
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

@@ -19,15 +19,18 @@ class GUIInitializer(Overlay):
 
         io.config_flags |= imgui.CONFIG_NAV_ENABLE_KEYBOARD
         io.config_flags |= imgui.CONFIG_DOCKING_ENABLE
-        io.config_flags |= imgui.CONFIG_VIEWPORTS_ENABLE
+        io.config_flags |= imgui.CONFIG_VIEWPORTS_ENABLE # type: ignore
+
+        fontLocation = ".\\Asura\\InternalAssets\\Fonts\\opensans\\OpenSans-Regular.ttf"
+        io.fonts.add_font_from_file_ttf(fontLocation, 18.0)
 
         imgui.style_colors_dark()
 
         style = imgui.get_style()
-        if io.config_flags & imgui.CONFIG_VIEWPORTS_ENABLE:
+        if io.config_flags & imgui.CONFIG_VIEWPORTS_ENABLE: # type: ignore
             style.window_rounding = 0.0
             bgColor = style.colors[imgui.COLOR_WINDOW_BACKGROUND]
-            style.colors[imgui.COLOR_WINDOW_BACKGROUND] = imgui.Vec4( bgColor.x, bgColor.y, bgColor.z, 1.0 )
+            style.colors[imgui.COLOR_WINDOW_BACKGROUND] = imgui.Vec4( bgColor.x, bgColor.y, bgColor.z, 1.0 ) # type: ignore
 
         self._EventDispatcher.AddHandler( EventType.KeyPressed    , self.__KeyboardPressCallback    ) # type: ignore
         self._EventDispatcher.AddHandler( EventType.KeyReleased   , self.__KeyboardReleasedCallback ) # type: ignore
@@ -112,10 +115,10 @@ class GUIInitializer(Overlay):
         self.__Renderer.render(imgui.get_draw_data())
 
         io = imgui.get_io()
-        if io.config_flags & imgui.CONFIG_VIEWPORTS_ENABLE:
+        if io.config_flags & imgui.CONFIG_VIEWPORTS_ENABLE: # type: ignore
             backupCurrentContext = glfw.get_current_context()
             imgui.update_platform_windows()
-            imgui.render_platform_windows_default()
+            imgui.render_platform_windows_default() # type: ignore
             glfw.make_context_current(backupCurrentContext)
 
     

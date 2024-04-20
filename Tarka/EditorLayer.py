@@ -2,9 +2,13 @@ from Asura import *
 
 class EditorLayer(Overlay):
     dt: float
+    __AppOnEventFunction: Callable[[Event], None]
 
-    def __init__(self) -> None:
+    # This Layer takes the OnEvent Function as argument to interact with the application,
+    # and other layers
+    def __init__(self, appOnEventFunc: Callable[[Event], None]) -> None:
         super().__init__("EditorLayer")
+        self.__AppOnEventFunction = appOnEventFunc
         self.dt = 0.00001
 
     def OnInitialize(self) -> None: pass
@@ -29,7 +33,6 @@ class EditorLayer(Overlay):
             windowFlags |= imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_COLLAPSE | imgui.WINDOW_NO_RESIZE | \
                 imgui.WINDOW_NO_MOVE
             windowFlags |= imgui.WINDOW_NO_BRING_TO_FRONT_ON_FOCUS | imgui.WINDOW_NO_NAV_FOCUS
-            windowFlags |= imgui.WINDOW_MENU_BAR
 
         if dockspaceFlags & imgui.DOCKNODE_PASSTHRU_CENTRAL_NODE:
             windowFlags |= imgui.WINDOW_NO_BACKGROUND
@@ -50,7 +53,8 @@ class EditorLayer(Overlay):
     def OnGUIRender(self) -> None:
         with imgui.begin_menu_bar():
             if imgui.begin_menu("File"):
-                if imgui.menu_item("Quit", "Ctrl+Q", False, True)[0]: pass
+                if imgui.menu_item("Quit", "Ctrl+Q", False, True)[0]: # type: ignore
+                    self.__AppOnEventFunction(WindowCloseEvent())
 
                 imgui.end_menu()
 

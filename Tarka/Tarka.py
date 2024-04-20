@@ -16,7 +16,9 @@ class Tarka(AsuraApplication):
             1280, 720
         ))
 
-        self._LayerStack.AddOverlay(EditorLayer())
+        # This Layer takes the OnEvent Function as argument to interact with the application,
+        # and other layers
+        self._LayerStack.AddOverlay(EditorLayer(self.OnEvent))
 
     def OnUpdate(self, dt: float) -> None: pass
 
