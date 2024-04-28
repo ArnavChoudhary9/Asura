@@ -136,4 +136,4 @@ def Main() -> None:
 
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats(filename="DetailedPrifile.prof")
+    stats.dump_stats(filename="DetailedProfile.prof")

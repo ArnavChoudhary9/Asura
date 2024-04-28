@@ -1,6 +1,6 @@
 Cython==0.29.28
 debugpy>=1.6.6
-esper>=2.0
+esper==2.5
 glfw>=2.1.0
 multipledispatch>=0.6.0
 numpy>=1.21.0

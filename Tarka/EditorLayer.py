@@ -3,15 +3,18 @@ from Asura import *
 class EditorLayer(Overlay):
     dt: float
     __AppOnEventFunction: Callable[[Event], None]
+    __CurrentProject: Project
 
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
     def __init__(self, appOnEventFunc: Callable[[Event], None]) -> None:
         super().__init__("EditorLayer")
         self.__AppOnEventFunction = appOnEventFunc
-        self.dt = 0.00001
 
-    def OnInitialize(self) -> None: pass
+    def OnInitialize(self) -> None:
+        self.dt = 0.00001
+        self.__CurrentProject = Project(Path("DefaultProject"), "DefaultProject")
+
     def OnStart(self) -> None: pass
     def OnUpdate(self, dt: float) -> None: self.dt = dt
     def OnStop(self) -> None: pass

@@ -1,12 +1,14 @@
-from .Utility     import *
-from .Core        import *
-from .Logging     import *
-from .Events      import *
-from .Layers      import *
 from .Application import *
+from .Core        import *
+from .Events      import *
 from .Graphics    import *
 from .GUI         import *
+from .Layers      import *
+from .Logging     import *
+from .Project     import *
 from .Renderer    import *
+from .Scene       import *
+from .Utility     import *
 
 from .Instrumentation import *
 
