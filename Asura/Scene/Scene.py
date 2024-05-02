@@ -27,6 +27,8 @@ class Scene:
     @property
     def EntityRegistry(self) -> esper.World: return self.__EntityRegistry
 
+    def SetUUID(self, uuid: UUID) -> None: self.__UUID = uuid
+
     def CreateEntity(self, name: str) -> Entity:
         return self.CreateEntityWithUUID(name, UUID4Generator())
 
@@ -39,7 +41,7 @@ class Scene:
     
     def DuplicateEntity(self, entity: Entity) -> Entity:
         newEntity = Entity(self.EntityRegistry.create_entity(), self)
-        newEntity.AddComponent(IDComponent, None, UUID4Generator())
+        newEntity.AddComponent(IDComponent, UUID4Generator())
 
         for component in entity.AllComponents:
             if isinstance(component, IDComponent): continue

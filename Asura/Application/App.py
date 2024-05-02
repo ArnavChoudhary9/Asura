@@ -78,7 +78,6 @@ class AsuraApplication(ABC):
                 userTimer.Stop()
                 
                 rendererTimer = Timer("Application::Render")
-                self._Renderer.Render()
                 rendererTimer.Stop()
 
                 if AZ_GUI:

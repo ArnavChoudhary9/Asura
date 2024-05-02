@@ -47,7 +47,7 @@ class Project:
     @property
     def BuildLocation(self) -> Path: return (self.__WorkingDirectory / "Builds")
 
-    def GetSceneLocation(self, scene: Scene) -> Path: return self.ScenesLocation / "{}.AZ".format(scene.Name)
+    def GetSceneLocation(self, scene: Scene) -> Path: return (self.ScenesLocation / "{}.AZ".format(scene.Name))
 
     def InitProject(self) -> None:
         ClientLoggers.Trace("It is a new project, Initializing . . .")
@@ -76,7 +76,7 @@ class Project:
                 ClientLoggers.Warn("Asura version mismatch!")
                 ClientLoggers.Trace("Trying to open in this version.")
 
-                # TODO: Handle downgrading / upgradiong
+                # TODO: Handle downgrading / upgrading
                 _SaveProject = True
 
             self.__Name = data["Project"]["Name"]
@@ -117,3 +117,6 @@ class Project:
     def RegisterScene(self, scene: Scene) -> None:
         self.__SceneRegistry[scene.SceneUUID] = scene
         self.__SceneOrder.append(scene.SceneUUID)
+
+    def GetScene(self, index: int) -> Scene:
+        return self.__SceneRegistry[self.__SceneOrder[index]]

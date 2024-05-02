@@ -4,6 +4,6 @@ C000: Annotation of variable types, function arguments and return types is must.
 
 C001: Variables starting with '__' are to be trated as private variables, i.e. they cannot be used outside the Class.
 C002: Variables starting with '_' are to be trated as protacted variables, i.e. they cannot be used outside the Class Hierarchy.
-C003: 'dt' is always in seconds(s).
+C003: 'dt' is always in seconds (s).
 C004: Line less than 100 columns wide, where ever possible, should be one liner.
 C005: Any function arguments named '_' or '__' should not be used in function they are just placeholders

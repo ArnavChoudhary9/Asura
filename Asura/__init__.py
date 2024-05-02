@@ -16,6 +16,8 @@ import imgui
 ImVec2 = imgui.Vec2 # type: ignore
 ImVec4 = imgui.Vec4 # type: ignore
 
+import numpy as np
+
 def PrintAllModulesNames():
     if AZ_DEBUG:
         PrintCore()

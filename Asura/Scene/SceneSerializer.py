@@ -67,5 +67,14 @@ class SceneSerializer:
 
     @staticmethod
     def Deserialize(path: Path) -> Scene:
-        scene = Scene("NewScene")
+        yaml.add_constructor("Vector3", AZ_YAML.DecodeVector3) # type: ignore
+        yaml.add_constructor("Vector4", AZ_YAML.DecodeVector4) # type: ignore
+
+        data = {}
+        with path.open('r') as file: data = yaml.load(file, yaml.Loader)
+
+        scene = Scene(data["Scene"])
+        scene.SetUUID(UUID(data["UUID"]))
+
+        file.close()
         return scene

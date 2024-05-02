@@ -57,3 +57,34 @@ class GraphicsLibraryENUM:
 
 AZ_GRAPHICSLIBRARY = GraphicsLibraryENUM.OpenGL
 #----------------------------------------------------------------
+
+#----------------------------------------------------------------
+class TextureConstants:
+    class Format:
+        RGB: int = 0
+        RGBA: int = 1
+        RED_INTEGER: int = 2
+        DEPTH24STENCIL8: int = 3
+
+        DEPTH: int = DEPTH24STENCIL8
+
+    class Size:
+        RGB8: int = 4
+        RGB16: int = 5
+        RGBA8: int = 6
+        RGBA16: int = 7
+
+    class DataType:
+        UNSIGNED_BYTE: int = 8
+
+    class WrapMode:
+        REPEAT: int = 9
+        MIRRORED_REPEAT: int = 10
+        CLAMP_TO_EDGE: int = 11
+        CLAMP_TO_BORDER: int = 12
+
+    class Filter:
+        LINEAR: int = 13
+        NEAREST: int = 14
+        MIPMAP_LINEAR: int = 15
+#----------------------------------------------------------------

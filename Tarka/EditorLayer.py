@@ -2,21 +2,33 @@ from Asura import *
 
 class EditorLayer(Overlay):
     dt: float
+
     __AppOnEventFunction: Callable[[Event], None]
+    __Renderer: Renderer
+
     __CurrentProject: Project
+    __CurrentScene: Scene
 
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
-    def __init__(self, appOnEventFunc: Callable[[Event], None]) -> None:
+    def __init__(self, appOnEventFunc: Callable[[Event], None], renderer: Renderer) -> None:
         super().__init__("EditorLayer")
         self.__AppOnEventFunction = appOnEventFunc
+        self.__Renderer = renderer
 
     def OnInitialize(self) -> None:
         self.dt = 0.00001
         self.__CurrentProject = Project(Path("DefaultProject"), "DefaultProject")
+        self.__CurrentScene = self.__CurrentProject.GetScene(0)
 
     def OnStart(self) -> None: pass
-    def OnUpdate(self, dt: float) -> None: self.dt = dt
+
+    def OnUpdate(self, dt: float) -> None:
+        self.dt = dt
+
+        self.__CurrentScene.OnUpdateEditor(dt)
+        self.__Renderer.Render(self.__CurrentScene)
+
     def OnStop(self) -> None: pass
     def OnDestroy(self) -> None: pass
 
@@ -54,6 +66,16 @@ class EditorLayer(Overlay):
             imgui.dockspace(dockspaceID, (0.0, 0.0), dockspaceFlags)
     
     def OnGUIRender(self) -> None:
+        self.ShowMenuBar()
+        self.ShowViewport()
+        self.ShowViewportToolbar()
+        self.ShowSceneHeirarchy()
+        self.ShowProperties()
+        self.ShowContentBrowser()
+        self.ShowConsole()
+        self.ShowDebugStats()
+
+    def ShowMenuBar(self) -> None:
         with imgui.begin_menu_bar():
             if imgui.begin_menu("File"):
                 if imgui.menu_item("Quit", "Ctrl+Q", False, True)[0]: # type: ignore
@@ -61,8 +83,32 @@ class EditorLayer(Overlay):
 
                 imgui.end_menu()
 
-        imgui.show_test_window()
-        with imgui.begin("FPS"):
+    def ShowViewport(self) -> None:
+        with imgui.begin("Viewport"):
+            pass
+
+    def ShowViewportToolbar(self) -> None:
+        with imgui.begin("Viewport Toolbar"):
+            pass
+
+    def ShowSceneHeirarchy(self) -> None:
+        with imgui.begin("Scene Heirarchy"):
+            pass
+
+    def ShowProperties(self) -> None:
+        with imgui.begin("Properties"):
+            pass
+
+    def ShowContentBrowser(self) -> None:
+        with imgui.begin("Content Browser"):
+            pass
+
+    def ShowConsole(self) -> None:
+        with imgui.begin("Console"):
+            pass
+
+    def ShowDebugStats(self) -> None:
+        with imgui.begin("Debug Stats"):
             imgui.text("FPS: {}".format(int(1 / self.dt)))
 
     def OnGUIEnd(self) -> None:

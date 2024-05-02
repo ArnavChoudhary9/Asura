@@ -1,9 +1,8 @@
-from ..Utility import AZ_GRAPHICSLIBRARY, GraphicsLibraryENUM, Protocol, runtime_checkable
+from ..Utility import AZ_GRAPHICSLIBRARY, GraphicsLibraryENUM, Protocol
 from ..Logging import CoreLogger
 
 from abc import ABC, abstractmethod
 
-@runtime_checkable
 class SuppurtsGraphicsContext(Protocol):
     @abstractmethod
     def Init(self) -> None: ...
