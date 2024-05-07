@@ -9,6 +9,8 @@ class EditorLayer(Overlay):
     __CurrentProject: Project
     __CurrentScene: Scene
 
+    __TestValue: int
+
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
     def __init__(self, appOnEventFunc: Callable[[Event], None], renderer: Renderer) -> None:
@@ -27,7 +29,11 @@ class EditorLayer(Overlay):
         self.dt = dt
 
         self.__CurrentScene.OnUpdateEditor(dt)
-        self.__Renderer.Render(self.__CurrentScene)
+
+        self.__Renderer.BeginScene(self.__CurrentScene)
+        self.__Renderer.Render()
+        self.__TestValue = Math.BytesToPythonInt32(self.__Renderer.Framebuffer.ReadPixel(1, 0, 0))
+        self.__Renderer.EndScene()
 
     def OnStop(self) -> None: pass
     def OnDestroy(self) -> None: pass
@@ -111,13 +117,7 @@ class EditorLayer(Overlay):
     def ShowDebugStats(self) -> None:
         with imgui.begin("Debug Stats"):
             imgui.text("FPS: {}".format(int(1 / self.dt)))
-
-            framebuffer = self.__Renderer.Framebuffer
-            framebuffer.Bind()
-            value = Math.BytesToPythonInt32(framebuffer.ReadPixel(1, 0, 0))
-            framebuffer.Unbind()
-            
-            imgui.text("Red Integer value: {}".format(value))
+            imgui.text("Red Integer value: {}".format(self.__TestValue))
 
     def OnGUIEnd(self) -> None:
         imgui.end() # This ends the dockspace

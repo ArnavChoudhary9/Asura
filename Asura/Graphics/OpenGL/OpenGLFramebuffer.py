@@ -86,7 +86,7 @@ class OpenGLFramebuffer(Framebuffer):
     def Bind(self) -> None: glBindFramebuffer(GL_FRAMEBUFFER, self.__RendererID)
     def Unbind(self) -> None: glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
-    def ClearAttachment(self, index: int, value) -> None:
+    def ClearAttachment(self, index: int, value: bytes) -> None:
         texture = self.__Textures[index]
         _format = ConvertConstant(texture.Specifications.TextureFormat)
         _id = texture.RendererID

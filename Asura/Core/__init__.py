@@ -1,6 +1,6 @@
 from ..Utility import *
 
-ASURA_VERSION: tuple = (0,0,1,"dev")
+ASURA_VERSION: tuple = (0,1,0,"dev")
 ASURA_VERSION_STR: str = ".".join(
     [str(s) for s in ASURA_VERSION]
 )
