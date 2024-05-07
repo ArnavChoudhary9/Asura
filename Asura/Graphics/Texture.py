@@ -30,6 +30,10 @@ class Texture(ABC):
 
     @property
     @abstractmethod
+    def Specifications(self) -> TextureSpecification: ...
+
+    @property
+    @abstractmethod
     def TextureUUID(self) -> int: ...
 
     @property

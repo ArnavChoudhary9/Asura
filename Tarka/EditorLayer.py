@@ -85,7 +85,8 @@ class EditorLayer(Overlay):
 
     def ShowViewport(self) -> None:
         with imgui.begin("Viewport"):
-            pass
+            texture = self.__Renderer.Framebuffer.GetColorAttachment(0)
+            imgui.image(texture.RendererID, 640, 360)
 
     def ShowViewportToolbar(self) -> None:
         with imgui.begin("Viewport Toolbar"):
@@ -110,6 +111,13 @@ class EditorLayer(Overlay):
     def ShowDebugStats(self) -> None:
         with imgui.begin("Debug Stats"):
             imgui.text("FPS: {}".format(int(1 / self.dt)))
+
+            framebuffer = self.__Renderer.Framebuffer
+            framebuffer.Bind()
+            value = Math.BytesToPythonInt32(framebuffer.ReadPixel(1, 0, 0))
+            framebuffer.Unbind()
+            
+            imgui.text("Red Integer value: {}".format(value))
 
     def OnGUIEnd(self) -> None:
         imgui.end() # This ends the dockspace

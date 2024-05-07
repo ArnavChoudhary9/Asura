@@ -16,7 +16,7 @@ class WindowProperties:
     EventCallback: Callable[[Event], None] = lambda _: None # C005
 
     @property
-    def Dimensions(self) -> Tuple[float, float]: return (self.Width, self.Height)
+    def Dimensions(self) -> Tuple[int, int]: return (self.Width, self.Height)
 
 class Window:
     GLFWInitialized: bool = False
