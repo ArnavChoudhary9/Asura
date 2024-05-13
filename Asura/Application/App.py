@@ -16,7 +16,6 @@ class AsuraApplication(ABC):
     _LayerStack: LayerStack
     _EventDispatcher: EventDispatcher
     _Window: Window
-    _Renderer: Renderer
 
     # States
     _IsMinimised: bool
@@ -31,7 +30,6 @@ class AsuraApplication(ABC):
 
         self._Window = Window(windowProps)
         self._Window.SetEventCallback(self.OnEvent)
-        self._Renderer = Renderer(*windowProps.Dimensions)
 
         self._EventDispatcher = EventDispatcher()
         self._EventDispatcher.AddHandler(EventType.WindowClose, self.OnApplicationClose) # type: ignore
@@ -76,9 +74,6 @@ class AsuraApplication(ABC):
                 userTimer = Timer("Application::User::OnUpdate")
                 self.OnUpdate(self._DeltaTime)
                 userTimer.Stop()
-                
-                rendererTimer = Timer("Application::Render")
-                rendererTimer.Stop()
 
                 if AZ_GUI:
                     guiUpdateTimer = Timer("Application::GUIUpdate")

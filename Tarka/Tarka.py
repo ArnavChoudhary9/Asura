@@ -11,14 +11,15 @@ PrintAllModulesNames()
 
 class Tarka(AsuraApplication):
     def __init__(self) -> None:
+        width, height = 1280, 720
         super().__init__("Tarka", WindowProperties(
             "Tarka",
-            1280, 720
+            width, height
         ))
 
         # This Layer takes the OnEvent Function as argument to interact with the application,
         # and other layers
-        self._LayerStack.AddOverlay(EditorLayer(self.OnEvent, self._Renderer))
+        self._LayerStack.AddOverlay(EditorLayer(self.OnEvent, width, height))
 
     def OnUpdate(self, dt: float) -> None: pass
 

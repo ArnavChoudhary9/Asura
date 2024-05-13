@@ -102,6 +102,8 @@ class OpenGLFramebuffer(Framebuffer):
             CoreLogger.Warn("Attempting to resize framebuffer to {}x{}", width, height)
             return
         
+        if self.__Specification.Width == width and self.__Specification.Height == height: return
+
         self.__Specification.Width = width
         self.__Specification.Height = height
 

@@ -1,10 +1,4 @@
-Entities:
-- Entity: 1367bcb0-61f5-4f64-8beb-3320eb0e762a
-  Tag: TestEntity
-  Transform:
-    Rotation: !<Vector3> [0.0, 0.0, 0.0]
-    Scale: !<Vector3> [1.0, 1.0, 1.0]
-    Translation: !<Vector3> [0.0, 0.0, 0.0]
+Entities: []
 Scene: NewScene
 UUID: e3135e7b-0fb8-3862-ab8e-1b1c377d1c55
-Version: 0.0.1.dev
+Version: 0.1.0.dev

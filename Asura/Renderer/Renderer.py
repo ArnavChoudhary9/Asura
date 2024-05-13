@@ -16,6 +16,7 @@ class Renderer:
         self.__Height = height
 
         framebufferSpecs = FramebufferSpecification(self.__Width, self.__Height)
+
         framebufferSpecs.AddAttachment(TextureSpecification())
 
         redIntBufferSpecs = TextureSpecification()
@@ -36,8 +37,9 @@ class Renderer:
     @property
     def Framebuffer(self) -> SupportsFramebuffer: return self.__Framebuffer
 
-    def Resize(self, width: float, height: float) -> None:
+    def Resize(self, width: int, height: int) -> None:
         self.__RenderCommandList.AddCommand(RenderCommands.Resize, width, height)
+        self.__Framebuffer.Resize(width, height)
 
     def BeginScene(self, scene: Scene) -> None:
         commandList = None
@@ -50,8 +52,8 @@ class Renderer:
 
     def Render(self) -> None:
         self.__RenderCommandList.AddCommand(RenderCommands.Clear, 0.3, 0.65, 0.75)
-        self.__Framebuffer.ClearAttachment(1, Math.PythonInt32ToBytes(69))
-        self.__RenderCommandList.Execute()
+        self.__Framebuffer.ClearAttachment(1, Math.PythonInt32ToBytes(0))
 
     def EndScene(self) -> None:
+        self.__RenderCommandList.Execute()
         self.__Framebuffer.Unbind()

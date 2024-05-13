@@ -23,6 +23,9 @@ class Texture(ABC):
     @staticmethod
     def Init() -> None:
         Texture2D.Init()
+    
+    @abstractmethod
+    def __init__(self, width: int, height: int, spec: TextureSpecification) -> None: ...
 
     @property
     @abstractmethod

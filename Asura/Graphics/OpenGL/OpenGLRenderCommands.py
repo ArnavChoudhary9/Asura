@@ -11,4 +11,4 @@ class OpenGLRenderCommands:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # type: ignore
 
     @staticmethod
-    def Resize(x: int, y: int) -> None: glViewport(0, 0, x, y)
+    def Resize(x: int, y: int) -> None: glViewport(0, 0, int(x), int(y))

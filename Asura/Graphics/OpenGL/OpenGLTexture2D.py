@@ -3,7 +3,10 @@ from .ConstantConverter import ConvertConstant
 from ..Texture import *
 from ...Utility import UUID, UUID4Generator
 
-from OpenGL.GL import *
+from OpenGL.GL import glGenTextures, glBindTexture, GL_TEXTURE_2D, glTextureStorage2D, \
+    glTextureParameteri, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_TEXTURE_MIN_FILTER, \
+    GL_TEXTURE_MAG_FILTER, glDeleteTextures, glTextureSubImage2D, glBindTextureUnit
+    
 
 class OpenGLTexture2D(Texture2D):
     __RendererID: int
