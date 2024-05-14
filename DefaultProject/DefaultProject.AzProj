@@ -1,4 +1,4 @@
-AsuraVersion: 0.1.0.dev
+AsuraVersion: 0.2.0.dev
 Project:
   Name: DefaultProject
   SceneOrder:

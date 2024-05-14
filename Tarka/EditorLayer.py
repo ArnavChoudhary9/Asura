@@ -4,6 +4,7 @@ class EditorLayer(Overlay):
     dt: float
 
     __AppOnEventFunction: Callable[[Event], None]
+    __EventBlockingFunction: Callable[[bool], None]
     __Renderer: Renderer
 
     __CurrentProject: Project
@@ -15,12 +16,20 @@ class EditorLayer(Overlay):
     __ViewportFocused: bool
     __ViewportHovered: bool
 
+    __IsBlocking: bool
+
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
-    def __init__(self, appOnEventFunc: Callable[[Event], None], width: int, height: int) -> None:
+    def __init__(
+        self,
+        appOnEventFunc: Callable[[Event], None],
+        dimention: Tuple[int, int],
+        eventBlockingFunction: Callable[[bool], None]
+    ) -> None:
         super().__init__("EditorLayer")
         self.__AppOnEventFunction = appOnEventFunc
-        self.__Renderer = Renderer(width, height)
+        self.__Renderer = Renderer(*dimention)
+        self.__EventBlockingFunction = eventBlockingFunction
 
     def OnInitialize(self) -> None:
         self.dt = 0.00001
@@ -34,6 +43,7 @@ class EditorLayer(Overlay):
         ]
 
         self.__ViewportFocused = self.__ViewportHovered = False
+        self.__IsBlocking = False
 
     def OnStart(self) -> None: pass
 
@@ -125,6 +135,9 @@ class EditorLayer(Overlay):
             self.__ViewportFocused = imgui.is_window_focused()
             self.__ViewportHovered = imgui.is_window_hovered()
 
+            self.__IsBlocking = not (self.__ViewportFocused or self.__ViewportHovered)
+            self.__EventBlockingFunction(self.__IsBlocking)
+
             texture = self.__Renderer.Framebuffer.GetColorAttachment(0)
             imgui.image(texture.RendererID, *self.__ViewportSize)
         
@@ -153,6 +166,7 @@ class EditorLayer(Overlay):
     def ShowDebugStats(self) -> None:
         with imgui.begin("Debug Stats"):
             imgui.text("FPS: {}".format(int(1 / self.dt)))
+            imgui.text("Is blocking: {}".format(self.__IsBlocking))
 
     def OnGUIEnd(self) -> None:
         imgui.end() # This ends the dockspace

@@ -36,7 +36,8 @@ class AsuraApplication(ABC):
         self._EventDispatcher.AddHandler(EventType.WindowResize, self.OnWindowResize) # type: ignore
 
         self._LayerStack = LayerStack()
-        self._LayerStack.AddOverlay(GUIInitializer(self._Window))
+        self._GUILayer = GUIInitializer(self._Window)
+        self._LayerStack.AddOverlay(self._GUILayer)
 
         self._LastFrameTime = 0.0
         self._DeltaTime = 0.0
