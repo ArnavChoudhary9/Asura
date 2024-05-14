@@ -25,11 +25,13 @@ collects = " ".join([f"--collect-all {package}" for package in toCollect])
 hiddenImports = " ".join([f"--hidden-import {package}" for package in hiddenImports])
 
 additionals = " ".join([
-    "--noconsole" if config == "r" else ""
+    "--noconsole --onefile" if config == "r" else ""
 ])
 
 commands = [
     f"PyInstaller --path \"{currdir}\" {collects} {hiddenImports} {additionals} \"{toBuild}\\{toBuild}\".py",
+
+    f"mkdir \"dist\\{toBuild}\"" if config == "r" else "",
 
     f"xcopy /s \"Build\\Essentials\" \"dist\\{toBuild}\"",
     f"copy \".\\imgui.ini\" \"dist\\{toBuild}\\\"",
@@ -39,6 +41,9 @@ commands = [
 
     f"mkdir \"dist\\{toBuild}\\Resources\"",
     f"xcopy /s /i \"{toBuild}\\Resources\" \"dist\\{toBuild}\\Resources\"",
+
+    f"copy \"dist\\{toBuild}.exe\" \"dist\\{toBuild}\"" if config == "r" else "",
+    f"del \"dist\\{toBuild}.exe\"" if config == "r" else "",
 
     f"@rd /S /Q \"Build\\{toBuild}\"",
     f"del \"{toBuild}.spec\"",

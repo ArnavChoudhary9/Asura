@@ -126,7 +126,7 @@ class EditorLayer(Overlay):
             self.__ViewportHovered = imgui.is_window_hovered()
 
             texture = self.__Renderer.Framebuffer.GetColorAttachment(0)
-            imgui.image(texture.RendererID, self.__ViewportSize[0], self.__ViewportSize[1])
+            imgui.image(texture.RendererID, *self.__ViewportSize)
         
         imgui.pop_style_var()
 
