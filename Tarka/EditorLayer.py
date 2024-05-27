@@ -1,7 +1,31 @@
 from Asura import *
 
+class _SceneStateManager:
+    Edit  : int = 0
+    Play  : int = 1
+    Pause : int = 2
+    
+    CurrentState: int
+
+    @staticmethod
+    def Init() -> None: _SceneStateManager.CurrentState = _SceneStateManager.Edit
+
+    @staticmethod
+    def SwitchToEdit() -> None: _SceneStateManager.CurrentState = _SceneStateManager.Edit
+    @staticmethod
+    def SwitchToPlay() -> None: _SceneStateManager.CurrentState = _SceneStateManager.Play
+    @staticmethod
+    def SwitchToPause() -> None: _SceneStateManager.CurrentState = _SceneStateManager.Pause
+
+    @staticmethod
+    def IsEditing() -> bool: return _SceneStateManager.CurrentState == _SceneStateManager.Edit
+    @staticmethod
+    def IsPlaying() -> bool: return _SceneStateManager.CurrentState == _SceneStateManager.Play
+    @staticmethod
+    def IsPaused() -> bool: return _SceneStateManager.CurrentState == _SceneStateManager.Pause
+
 class EditorLayer(Overlay):
-    dt: float
+    __dt: float
 
     __AppOnEventFunction: Callable[[Event], None]
     __EventBlockingFunction: Callable[[bool], None]
@@ -17,26 +41,39 @@ class EditorLayer(Overlay):
     __ViewportHovered: bool
 
     __IsBlocking: bool
+    __MousePosition: Tuple[float, float]
+
+    # Task Bar Icons
+    __TaskBarPlayIcon    : Texture
+    __TaskBarPauseIcon   : Texture
+    __TaskBarStopIcon    : Texture
+    __TaskBarRestartIcon : Texture
+    __TaskBarStepIcon    : Texture
 
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
     def __init__(
         self,
         appOnEventFunc: Callable[[Event], None],
-        dimention: Tuple[int, int],
+        dimentions: Tuple[int, int],
         eventBlockingFunction: Callable[[bool], None]
     ) -> None:
         super().__init__("EditorLayer")
         self.__AppOnEventFunction = appOnEventFunc
-        self.__Renderer = Renderer(*dimention)
+        self.__Renderer = Renderer(*dimentions)
         self.__EventBlockingFunction = eventBlockingFunction
 
+        # This part of code is run after self.OnInitialize(),
+        # so self.__Renderer will not be defined to get the dimentions
+        self.__ViewportSize = ImVec2(*dimentions)
+
+        _SceneStateManager.Init()
+
     def OnInitialize(self) -> None:
-        self.dt = 0.00001
+        self.__dt = 0.00001
         self.__CurrentProject = Project(Path("DefaultProject"), "DefaultProject")
         self.__CurrentScene = self.__CurrentProject.GetScene(0)
 
-        self.__ViewportSize = ImVec2(0, 0)
         self.__ViewportBounds = [
             ImVec2(0, 0),
             ImVec2(0, 0)
@@ -44,12 +81,28 @@ class EditorLayer(Overlay):
 
         self.__ViewportFocused = self.__ViewportHovered = False
         self.__IsBlocking = False
+        self.__MousePosition = (0, 0)
+
+        self._EventDispatcher.AddHandler(EventType.MouseMoved, self.OnMouseMove) # type: ignore
+
+        # Task Bar Icons Loading
+        self.__TaskBarPlayIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\PlayButton.png"    ))
+        self.__TaskBarPauseIcon   = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\PauseButton.png"   ))
+        self.__TaskBarStopIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\StopButton.png"    ))
+        self.__TaskBarRestartIcon = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\RestartButton.png" ))
+        self.__TaskBarStepIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\StepButton.png"    ))
+
+    def OnMouseMove(self, event: MouseMovedEvent) -> None: self.__MousePosition = event.OffsetX, event.OffsetY
 
     def OnStart(self) -> None: pass
 
     def OnUpdate(self, dt: float) -> None:
-        self.dt = dt
-        self.__CurrentScene.OnUpdateEditor(dt)
+        self.__dt = dt
+
+        if _SceneStateManager.IsEditing() or _SceneStateManager.IsPaused():
+            self.__CurrentScene.OnUpdateEditor(dt)
+        elif _SceneStateManager.IsPlaying():
+            self.__CurrentScene.OnUpdateRuntime(dt)
 
         rendererTimer = Timer("Application::Layer::Render")
         self.__Renderer.BeginScene(self.__CurrentScene)
@@ -143,9 +196,83 @@ class EditorLayer(Overlay):
         
         imgui.pop_style_var()
 
+    # Start Block: Viewport
+    def __PlayScene(self) -> None:
+        # Create a copy of the scene
+        self.__CurrentScene
+
+    def __PauseScene(self) -> None:
+        pass
+
+    def __StepThroughScene(self) -> None:
+        pass
+
+    def __RestartScene(self) -> None:
+        pass
+
+    def __StopScene(self) -> None:
+        pass
+
+    def __ShowViewportToolbarButtons(self) -> None:
+        size = imgui.get_window_height() - 4.0
+        
+        NumButtons = 0
+        if   _SceneStateManager.IsEditing() : NumButtons = 1
+        elif _SceneStateManager.IsPlaying() : NumButtons = 3
+        elif _SceneStateManager.IsPaused()  : NumButtons = 4
+
+        imgui.set_cursor_pos_x(
+            imgui.get_window_content_region_max()[0]*0.5 - NumButtons*size*0.5
+        )
+
+        if _SceneStateManager.IsEditing():
+            if imgui.image_button(self.__TaskBarPlayIcon.RendererID, size, size): self.__PauseScene()
+            return
+
+        elif _SceneStateManager.IsPlaying():
+            if imgui.image_button(self.__TaskBarPauseIcon.RendererID, size, size): self.__PauseScene()
+
+            imgui.same_line()
+            if imgui.image_button(self.__TaskBarStopIcon.RendererID, size, size): self.__StopScene()
+
+            imgui.same_line()
+            if imgui.image_button(self.__TaskBarRestartIcon.RendererID, size, size): self.__RestartScene()
+
+            return
+        
+        elif _SceneStateManager.IsPaused():
+            if imgui.image_button(self.__TaskBarPlayIcon.RendererID, size, size): self.__PlayScene()
+
+            imgui.same_line()
+            if imgui.image_button(self.__TaskBarStopIcon.RendererID, size, size): self.__StopScene()
+
+            imgui.same_line()
+            if imgui.image_button(self.__TaskBarRestartIcon.RendererID, size, size): self.__RestartScene()
+
+            imgui.same_line()
+            if imgui.image_button(self.__TaskBarStepIcon.RendererID, size, size): self.__StepThroughScene()
+
+            return
+
     def ShowViewportToolbar(self) -> None:
-        with imgui.begin("Viewport Toolbar"):
-            pass
+        imgui.push_style_var(imgui.STYLE_WINDOW_PADDING, ImVec2(0, 2))
+        imgui.push_style_var(imgui.STYLE_ITEM_INNER_SPACING, ImVec2(0, 0))
+        imgui.push_style_var(imgui.STYLE_ITEM_SPACING, ImVec2(0, 0))
+        imgui.push_style_color(imgui.COLOR_BUTTON, 0, 0, 0, 0) # type: ignore
+
+        colors = imgui.get_style().colors
+        buttonHovered = colors[imgui.COLOR_BUTTON_HOVERED]
+        imgui.push_style_color(imgui.COLOR_BUTTON_HOVERED, buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5) # type: ignore
+        buttonActive = colors[imgui.COLOR_BUTTON_ACTIVE]
+        imgui.push_style_color(imgui.COLOR_BUTTON_ACTIVE, buttonActive.x, buttonActive.y, buttonActive.z, 0.5) # type: ignore
+
+        flags = imgui.WINDOW_NO_DECORATION | imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE
+
+        with imgui.begin("##Taskbar", flags=flags): self.__ShowViewportToolbarButtons()
+
+        imgui.pop_style_color(3)
+        imgui.pop_style_var(3)
+    # End Block
 
     def ShowSceneHeirarchy(self) -> None:
         with imgui.begin("Scene Heirarchy"):
@@ -160,13 +287,20 @@ class EditorLayer(Overlay):
             pass
 
     def ShowConsole(self) -> None:
-        with imgui.begin("Console"):
+        with imgui.begin("Console", flags=imgui.WINDOW_NO_FOCUS_ON_APPEARING):
             pass
 
     def ShowDebugStats(self) -> None:
-        with imgui.begin("Debug Stats"):
-            imgui.text("FPS: {}".format(int(1 / self.dt)))
+        with imgui.begin("Debug Stats", flags=imgui.WINDOW_NO_FOCUS_ON_APPEARING):
+            imgui.text("FPS: {}".format(int(1 / self.__dt)))
             imgui.text("Is blocking: {}".format(self.__IsBlocking))
+
+            if self.__IsBlocking: return
+
+            imgui.text("Relative mouse position: {}, {}".format(
+                self.__MousePosition[0] - self.__ViewportBounds[0][0],
+                self.__MousePosition[1] - self.__ViewportBounds[0][1]
+            ))
 
     def OnGUIEnd(self) -> None:
         imgui.end() # This ends the dockspace

@@ -58,11 +58,11 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV 'X:\Asura\virtualenv'
+set -gx VIRTUAL_ENV 'D:\Asura\virtualenv'
 
 # https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
 if test (echo $FISH_VERSION | head -c 1) -lt 3
-   set -gx _OLD_VIRTUAL_PATH (_bashify_path $PATH)
+    set -gx _OLD_VIRTUAL_PATH (_bashify_path $PATH)
 else
     set -gx _OLD_VIRTUAL_PATH $PATH
 end

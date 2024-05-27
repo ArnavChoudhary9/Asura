@@ -54,20 +54,12 @@ class TransformComponent:
 
     def __pyrr_Matrix44__(self) -> pyrr.Matrix44: return self.Transform
 
-    def SetTranslation(self, pos: pyrr.Vector3) -> None:
-        self.Translation = pos
-
-    def Translate(self, delta: pyrr.Vector3) -> None:
-        self.Translation = self.Translation + delta
-
-    def SetRotation(self, rotation: pyrr.Vector3) -> None:
-        self.Rotation = rotation
+    def SetTranslation(self, pos: pyrr.Vector3) -> None: self.Translation = pos
+    def Translate(self, delta: pyrr.Vector3) -> None: self.Translation = self.Translation + delta
+    def SetRotation(self, rotation: pyrr.Vector3) -> None: self.Rotation = rotation
     
-    def Rotate(self, delta: pyrr.Vector3) -> None:
-        self.Rotation = self.Rotation + delta
-
-    def SetScale(self, scale: pyrr.Vector3) -> None:
-        self.Scale = scale
+    def Rotate(self, delta: pyrr.Vector3) -> None: self.Rotation = self.Rotation + delta
+    def SetScale(self, scale: pyrr.Vector3) -> None: self.Scale = scale
 
     def Copy(self):
         component = TransformComponent()
@@ -78,12 +70,17 @@ class TransformComponent:
 
         return component
     
-    def Serialize(self) -> Dict:
+    def Serialize(self) -> Dict[str, Dict[str, pyrr.Vector3]]:
         return {"Transform": {
-            "Translation": self.Translation,
-            "Rotation": self.Rotation,
-            "Scale": self.Scale
+            "Translation" : self.Translation,
+            "Rotation"    : self.Rotation,
+            "Scale"       : self.Scale
         }}
+    
+    def Deserialize(self, data: Dict[str, pyrr.Vector3]) -> None:
+        self.Translation = data["Translation"]
+        self.Rotation    = data["Rotation"]
+        self.Scale       = data["Scale"]
 
 # CTV = ComponentTypeVar
 CTV = TypeVar("CTV",

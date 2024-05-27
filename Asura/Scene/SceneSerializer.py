@@ -76,5 +76,13 @@ class SceneSerializer:
         scene = Scene(data["Scene"])
         scene.SetUUID(UUID(data["UUID"]))
 
-        file.close()
+        for entityDict in data["Entities"]:
+            uuid = UUID(entityDict["Entity"])
+            name = entityDict["Tag"]
+            entity = scene.CreateEntityWithUUID(name, uuid)
+            entity.GetComponent(TransformComponent).Deserialize(entityDict["Transform"])
+
+            for componentType, componentData in entityDict.items():
+                if componentType in ["Entity", "Tag", "Transform"]: continue
+
         return scene

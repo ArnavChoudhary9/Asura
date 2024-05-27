@@ -7,7 +7,7 @@ AZ_VSYNC: bool = True
 #----------------------------------------------------------------
 
 #----------------------------------------------------------------
-AZ_CONFIG = 3
+AZ_CONFIG = 0
 AZ_CONFIG_STR_LIST = [
     "DEBUG",
     "NO_LOGGING",
@@ -17,30 +17,35 @@ AZ_CONFIG_STR_LIST = [
 ]
 AZ_CONFIG_STR: str = AZ_CONFIG_STR_LIST[AZ_CONFIG]
 
+# DEBUG
 if AZ_CONFIG == 0:
     AZ_DEBUG   : bool = True
     AZ_LOGGING : bool = True
     AZ_GUI     : bool = True
     AZ_INSTRUMENTATION: bool = True
 
+# NO_LOGGING
 elif AZ_CONFIG == 1:
     AZ_DEBUG   : bool = True
     AZ_LOGGING : bool = False
     AZ_GUI     : bool = True
     AZ_INSTRUMENTATION: bool = True
 
+# NO_INSTRUMENTATION
 elif AZ_CONFIG == 2:
     AZ_DEBUG   : bool = True
     AZ_LOGGING : bool = True
     AZ_GUI     : bool = True
     AZ_INSTRUMENTATION: bool = False
 
+# RELEASE
 elif AZ_CONFIG == 3:
     AZ_DEBUG   : bool = False
     AZ_LOGGING : bool = False
     AZ_GUI     : bool = True
     AZ_INSTRUMENTATION: bool = False
 
+# RELEASE_NO_GUI
 elif AZ_CONFIG == 4:
     AZ_DEBUG   : bool = False
     AZ_LOGGING : bool = False

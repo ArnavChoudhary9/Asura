@@ -32,7 +32,7 @@ export-env {
       }
     }
 
-    let virtual_env = 'X:\Asura\virtualenv'
+    let virtual_env = 'D:\Asura\virtualenv'
     let bin = 'Scripts'
 
     let is_windows = ($nu.os-info.family) == 'windows'

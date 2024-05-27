@@ -26,18 +26,7 @@ class OpenGLFramebuffer(Framebuffer):
         for texture in self.__Textures: del texture
         glDeleteFramebuffers(1, [self.__RendererID])
 
-    def Invalidate(self) -> None:
-        if self.__RendererID:
-            glDeleteFramebuffers(1, [self.__RendererID])
-            for texture in self.__Textures: del texture
-            self.__Textures.clear()
-
-        self.__Textures = []
-
-        self.__RendererID = glGenFramebuffers(1)
-        glBindFramebuffer(GL_FRAMEBUFFER, self.__RendererID)
-
-
+    def __CreateAndAttachAttacments(self) -> None:
         numColorBuffers = -1
         numDepthBuffers = -1
         dim = self.__Specification.Dimensions
@@ -75,10 +64,24 @@ class OpenGLFramebuffer(Framebuffer):
                 [ GL_COLOR_ATTACHMENT0 + index for index in range(numColorBuffers) ] # type: ignore
             )
 
+    def Invalidate(self) -> None:
+        if self.__RendererID:
+            glDeleteFramebuffers(1, [self.__RendererID])
+            for texture in self.__Textures: del texture
+            self.__Textures.clear()
+
+        self.__Textures = []
+
+        self.__RendererID = glGenFramebuffers(1)
+        self.Bind()
+        
+        self.__CreateAndAttachAttacments()
+
         assert glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, CoreLogger.Error(
             "Framebuffer is incomplete"
         )
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+
+        self.Unbind()
 
     @property
     def Specifications(self) -> FramebufferSpecification: return self.__Specification
@@ -109,6 +112,7 @@ class OpenGLFramebuffer(Framebuffer):
 
         self.Invalidate()
         
+    # The framebuffer must be bound before reading
     def ReadPixel(self, index: int, x: int, y: int) -> bytes:
         glReadBuffer(GL_COLOR_ATTACHMENT0 + index) # type: ignore
         return bytes(glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT))

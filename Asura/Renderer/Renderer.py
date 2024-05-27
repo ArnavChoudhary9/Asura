@@ -36,6 +36,8 @@ class Renderer:
 
     @property
     def Framebuffer(self) -> SupportsFramebuffer: return self.__Framebuffer
+    @property
+    def Dimensions(self) -> Tuple[int, int]: return self.__Width, self.__Height
 
     def Resize(self, width: int, height: int) -> None:
         self.__RenderCommandList.AddCommand(RenderCommands.Resize, width, height)

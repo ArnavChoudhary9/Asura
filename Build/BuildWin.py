@@ -2,7 +2,7 @@ import os, sys
 import pathlib
 
 toBuild = sys.argv[1]
-config = "r"
+config = "d" if len(sys.argv) == 2 else sys.argv[2]
 
 if len(sys.argv) == 3:
     config = sys.argv[2]
@@ -39,8 +39,8 @@ commands = [
     f"mkdir \"dist\\{toBuild}\\Asura\\InternalAssets\"",
     f"xcopy /s /i \"Asura\\InternalAssets\" \"dist\\{toBuild}\\Asura\\InternalAssets\"",
 
-    f"mkdir \"dist\\{toBuild}\\Resources\"",
-    f"xcopy /s /i \"{toBuild}\\Resources\" \"dist\\{toBuild}\\Resources\"",
+    f"mkdir \"dist\\{toBuild}\\{toBuild}\\Resources\"",
+    f"xcopy /s /i \"{toBuild}\\Resources\" \"dist\\{toBuild}\\{toBuild}\\Resources\"",
 
     f"copy \"dist\\{toBuild}.exe\" \"dist\\{toBuild}\"" if config == "r" else "",
     f"del \"dist\\{toBuild}.exe\"" if config == "r" else "",

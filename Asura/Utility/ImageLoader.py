@@ -1,4 +1,5 @@
 from ..Logging import CoreLogger
+from ..Graphics.Texture import Texture2D, Texture, TextureSpecification
 
 from PIL import Image as _PILImage
 from PIL.Image import Image
@@ -12,3 +13,9 @@ def LoadImage(path: Path) -> Image:
     
     # TODO: Convert to RGB/RGBA/sRGB/sRGBA also.
     return image.convert("RGBA")
+
+def LoadImageAsTexture(path: Path) -> Texture:
+    image = LoadImage(path)
+    texture = Texture2D.Create(image.width, image.height, TextureSpecification())
+    texture.SetData(image.tobytes(), None)
+    return texture
