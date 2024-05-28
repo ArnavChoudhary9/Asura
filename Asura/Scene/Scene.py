@@ -51,10 +51,14 @@ class Scene:
     
     def DestroyEntity(self, entity: Entity) -> None: self.__ToDelete.add(entity)
 
+    def OnStart(self) -> None: pass
+
     def OnUpdate(self) -> None:
         for entity in self.__ToDelete:  
             self.__EntityRegistry.delete_entity(entity.EntityHandle, immediate=True)
         self.__ToDelete.clear()
+
+    def OnStop(self) -> None: pass
 
     def OnUpdateEditor(self, dt: float) -> None:
         self.OnUpdate()

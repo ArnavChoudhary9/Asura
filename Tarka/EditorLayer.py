@@ -196,22 +196,25 @@ class EditorLayer(Overlay):
         
         imgui.pop_style_var()
 
-    # Start Block: Viewport
+    #--------------------- Start Block: Viewport ---------------------
     def __PlayScene(self) -> None:
         # Create a copy of the scene
-        self.__CurrentScene
+        self.__CurrentScene.OnStart()
+        _SceneStateManager.SwitchToPlay()
 
-    def __PauseScene(self) -> None:
-        pass
+    def __PauseScene  (self) -> None: _SceneStateManager.SwitchToPause()
+    def __ResumeScene (self) -> None: _SceneStateManager.SwitchToPlay()
 
-    def __StepThroughScene(self) -> None:
-        pass
+    # Just updates the scene once
+    def __StepThroughScene(self) -> None: self.__CurrentScene.OnUpdateEditor(1/60)
 
     def __RestartScene(self) -> None:
-        pass
+        self.__StopScene()
+        self.__PlayScene()
 
     def __StopScene(self) -> None:
-        pass
+        self.__CurrentScene.OnStop()
+        _SceneStateManager.SwitchToEdit()
 
     def __ShowViewportToolbarButtons(self) -> None:
         size = imgui.get_window_height() - 4.0
@@ -226,31 +229,39 @@ class EditorLayer(Overlay):
         )
 
         if _SceneStateManager.IsEditing():
-            if imgui.image_button(self.__TaskBarPlayIcon.RendererID, size, size): self.__PauseScene()
+            if imgui.image_button(self.__TaskBarPlayIcon.RendererID, size, size): self.__PlayScene()
+            GUILibrary.TooltipIfHovered("Play (F5)")
             return
 
         elif _SceneStateManager.IsPlaying():
             if imgui.image_button(self.__TaskBarPauseIcon.RendererID, size, size): self.__PauseScene()
+            GUILibrary.TooltipIfHovered("Pause (F6)")
 
             imgui.same_line()
             if imgui.image_button(self.__TaskBarStopIcon.RendererID, size, size): self.__StopScene()
+            GUILibrary.TooltipIfHovered("Stop (Shift+F5)")
 
             imgui.same_line()
             if imgui.image_button(self.__TaskBarRestartIcon.RendererID, size, size): self.__RestartScene()
+            GUILibrary.TooltipIfHovered("Restart (Shift+Ctrl+F5)")
 
             return
         
         elif _SceneStateManager.IsPaused():
-            if imgui.image_button(self.__TaskBarPlayIcon.RendererID, size, size): self.__PlayScene()
+            if imgui.image_button(self.__TaskBarPlayIcon.RendererID, size, size): self.__ResumeScene()
+            GUILibrary.TooltipIfHovered("Resume (F5)")
 
             imgui.same_line()
             if imgui.image_button(self.__TaskBarStopIcon.RendererID, size, size): self.__StopScene()
+            GUILibrary.TooltipIfHovered("Stop (Shift+F5)")
 
             imgui.same_line()
             if imgui.image_button(self.__TaskBarRestartIcon.RendererID, size, size): self.__RestartScene()
+            GUILibrary.TooltipIfHovered("Restart (Shift+Ctrl+F5)")
 
             imgui.same_line()
             if imgui.image_button(self.__TaskBarStepIcon.RendererID, size, size): self.__StepThroughScene()
+            GUILibrary.TooltipIfHovered("Step (F10)")
 
             return
 
@@ -272,7 +283,7 @@ class EditorLayer(Overlay):
 
         imgui.pop_style_color(3)
         imgui.pop_style_var(3)
-    # End Block
+    #--------------------- End Block ---------------------
 
     def ShowSceneHeirarchy(self) -> None:
         with imgui.begin("Scene Heirarchy"):
