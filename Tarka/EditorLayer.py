@@ -1,5 +1,7 @@
 from Asura import *
 
+from Panels import *
+
 class _SceneStateManager:
     Edit  : int = 0
     Play  : int = 1
@@ -50,6 +52,8 @@ class EditorLayer(Overlay):
     __TaskBarRestartIcon : Texture
     __TaskBarStepIcon    : Texture
 
+    __Panels: List[Panel]
+
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
     def __init__(
@@ -91,6 +95,12 @@ class EditorLayer(Overlay):
         self.__TaskBarStopIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\StopButton.png"    ))
         self.__TaskBarRestartIcon = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\RestartButton.png" ))
         self.__TaskBarStepIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\StepButton.png"    ))
+
+        self.__Panels = []
+
+        sceneHierarchyPanel = SceneHierarchyPanel()
+        sceneHierarchyPanel.SetContext(self.__CurrentScene)
+        self.__Panels.append(sceneHierarchyPanel)
 
     def OnMouseMove(self, event: MouseMovedEvent) -> None: self.__MousePosition = event.OffsetX, event.OffsetY
 
@@ -151,8 +161,9 @@ class EditorLayer(Overlay):
         self.ShowMenuBar()
         self.ShowViewport()
         self.ShowViewportToolbar()
-        self.ShowSceneHeirarchy()
-        self.ShowProperties()
+
+        for panel in self.__Panels: panel.OnGUIRender()
+
         self.ShowContentBrowser()
         self.ShowConsole()
         self.ShowDebugStats()
@@ -283,15 +294,7 @@ class EditorLayer(Overlay):
 
         imgui.pop_style_color(3)
         imgui.pop_style_var(3)
-    #--------------------- End Block ---------------------
-
-    def ShowSceneHeirarchy(self) -> None:
-        with imgui.begin("Scene Heirarchy"):
-            pass
-
-    def ShowProperties(self) -> None:
-        with imgui.begin("Properties"):
-            pass
+    #--------------------------- End Block ---------------------------
 
     def ShowContentBrowser(self) -> None:
         with imgui.begin("Content Browser"):

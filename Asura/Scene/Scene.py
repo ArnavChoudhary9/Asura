@@ -1,4 +1,4 @@
-from ..Utility import UUID, UUID3Generator, UUID4Generator, MutableSet
+from ..Utility import UUID, UUID3Generator, UUID4Generator, MutableSet, List
 from .Entity import Entity
 from .Components import *
 
@@ -11,6 +11,7 @@ class Scene:
     __EntityRegistry: esper.World
 
     __ToDelete: MutableSet[Entity]
+    __ToDuplicate: MutableSet[Entity]
 
     def __init__(self, name: str) -> None:
         self.__Name = name
@@ -19,6 +20,7 @@ class Scene:
         self.__EntityRegistry = esper.World()
 
         self.__ToDelete = set()
+        self.__ToDuplicate = set()
 
     @property
     def Name(self) -> str: return self.__Name
@@ -49,7 +51,12 @@ class Scene:
 
         return newEntity
     
+    def DefferedDuplicateEntity(self, entity: Entity) -> None: self.__ToDuplicate.add(entity)    
     def DestroyEntity(self, entity: Entity) -> None: self.__ToDelete.add(entity)
+    
+    @property
+    def Entities(self) -> List[Entity]:
+        return [Entity(entity, self) for entity in self.EntityRegistry._entities.keys()]
 
     def OnStart(self) -> None: pass
 
@@ -57,6 +64,9 @@ class Scene:
         for entity in self.__ToDelete:  
             self.__EntityRegistry.delete_entity(entity.EntityHandle, immediate=True)
         self.__ToDelete.clear()
+
+        for entity in self.__ToDuplicate: self.DuplicateEntity(entity)
+        self.__ToDuplicate.clear()
 
     def OnStop(self) -> None: pass
 

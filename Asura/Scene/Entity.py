@@ -17,6 +17,9 @@ class Entity:
         self.__Scene = scene
         self.__EntityHandle = entityHandle
 
+    # This is just for deffered deletion/duplication
+    def __hash__(self) -> int: return self.__EntityHandle
+
     @property
     def Scene(self) -> SupportsScene: return self.__Scene
     @property
