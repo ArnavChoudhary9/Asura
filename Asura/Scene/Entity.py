@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Protocol
 
 from typing import TypeVar as _TypeVar
 from typing import Type    as _Type
@@ -8,6 +8,9 @@ from .SupportsScene import SupportsScene
 from .Components import IDComponent, TagComponent, TransformComponent
 
 _C = _TypeVar("_C")
+
+class SupportsComponents(Protocol):
+    def  Copy(self): ...
 
 class Entity:
     __EntityHandle: int
@@ -26,7 +29,7 @@ class Entity:
     def EntityHandle(self) -> int: return self.__EntityHandle
 
     @property
-    def AllComponents(self) -> Tuple[object, ...]:
+    def AllComponents(self) -> Tuple[SupportsComponents, ...]:
         return self.__Scene.EntityRegistry.components_for_entity(self.__EntityHandle)
     
     def __int__(self) -> int: return self.__EntityHandle
@@ -58,7 +61,7 @@ class Entity:
         self.__Scene.OnComponentAdded(self, component)
         return component
     
-    def AddComponentInstance(self, component: object) -> None:
+    def AddComponentInstance(self, component: SupportsComponents) -> None:
         if self.WarnIfHasComponent(type(component)): return
 
         self.__Scene.EntityRegistry.add_component(self.__EntityHandle, component)

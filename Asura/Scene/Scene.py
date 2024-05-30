@@ -47,7 +47,7 @@ class Scene:
 
         for component in entity.AllComponents:
             if isinstance(component, IDComponent): continue
-            newEntity.AddComponentInstance(component)
+            newEntity.AddComponentInstance(component.Copy()) # type: ignore
 
         return newEntity
     

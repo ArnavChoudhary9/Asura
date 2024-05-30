@@ -52,7 +52,7 @@ class EditorLayer(Overlay):
     __TaskBarRestartIcon : Texture
     __TaskBarStepIcon    : Texture
 
-    __Panels: List[Panel]
+    __Panels: PanelManager
 
     # This Layer takes the OnEvent Function as argument to interact with the application,
     # and other layers
@@ -96,11 +96,11 @@ class EditorLayer(Overlay):
         self.__TaskBarRestartIcon = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\RestartButton.png" ))
         self.__TaskBarStepIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\StepButton.png"    ))
 
-        self.__Panels = []
+        self.__Panels = PanelManager()
 
         sceneHierarchyPanel = SceneHierarchyPanel()
         sceneHierarchyPanel.SetContext(self.__CurrentScene)
-        self.__Panels.append(sceneHierarchyPanel)
+        self.__Panels.Add(sceneHierarchyPanel)
 
     def OnMouseMove(self, event: MouseMovedEvent) -> None: self.__MousePosition = event.OffsetX, event.OffsetY
 
@@ -162,7 +162,7 @@ class EditorLayer(Overlay):
         self.ShowViewport()
         self.ShowViewportToolbar()
 
-        for panel in self.__Panels: panel.OnGUIRender()
+        self.__Panels.OnGUIRender()
 
         self.ShowContentBrowser()
         self.ShowConsole()

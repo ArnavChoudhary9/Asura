@@ -34,10 +34,7 @@ class TransformComponent:
     Rotation    : pyrr.Vector3
     Scale       : pyrr.Vector3
 
-    def __init__(self) -> None:
-        self.Translation = pyrr.Vector3([ 0.0, 0.0, 0.0 ])
-        self.Rotation    = pyrr.Vector3([ 0.0, 0.0, 0.0 ])
-        self.Scale       = pyrr.Vector3([ 1.0, 1.0, 1.0 ])
+    def __init__(self) -> None: self.Reset()
 
     @property
     def Transform(self) -> pyrr.Matrix44:
@@ -60,6 +57,11 @@ class TransformComponent:
     
     def Rotate(self, delta: pyrr.Vector3) -> None: self.Rotation = self.Rotation + delta
     def SetScale(self, scale: pyrr.Vector3) -> None: self.Scale = scale
+
+    def Reset(self) -> None:
+        self.Translation = pyrr.Vector3([ 0.0, 0.0, 0.0 ])
+        self.Rotation    = pyrr.Vector3([ 0.0, 0.0, 0.0 ])
+        self.Scale       = pyrr.Vector3([ 1.0, 1.0, 1.0 ])
 
     def Copy(self):
         component = TransformComponent()
