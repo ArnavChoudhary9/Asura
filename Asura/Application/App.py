@@ -89,6 +89,7 @@ class AsuraApplication(ABC):
             updateTimer.Stop()
 
     def OnApplicationClose(self, event: WindowCloseEvent) -> bool:
+        ClientLoggers.Trace("OnWindowClose Event receved, closing application!")
         self.Close()
         event.Handled = True
         return True

@@ -51,12 +51,15 @@ class SceneHierarchyPanel(Panel):
             if imgui.is_mouse_down(0) and imgui.is_window_hovered(): self.__SelectionContext = None
 
             if imgui.begin_popup_context_window(popup_flags=imgui.POPUP_NO_OPEN_OVER_ITEMS|imgui.POPUP_MOUSE_BUTTON_RIGHT):
-                if imgui.menu_item("Create Entity")[0]: self.__Context.CreateEntity("Entity") # type: ignore
+                if imgui.begin_menu("Create Entity"):
+                    if imgui.menu_item("Empty Entity")[0]: self.__Context.CreateEntity("Empty Entity") # type: ignore
+                    imgui.end_menu()
+
                 imgui.end_popup()
                 
         with imgui.begin("Properties"):
             if not self.__SelectionContext: return
-            self.__DrawCompoents(self.__SelectionContext)
+            self.__DrawComponents(self.__SelectionContext)
     
     def __DrawEntityNode(self, entity: Entity) -> None:
         if not self.__Context:
@@ -83,7 +86,7 @@ class SceneHierarchyPanel(Panel):
 
         if opened: imgui.tree_pop()
 
-    def __DrawCompoents(self, entity: Entity) -> None:
+    def __DrawComponents(self, entity: Entity) -> None:
         if entity.HasComponent(TagComponent):
             tag = entity.GetComponent(TagComponent).Tag
             _, entity.GetComponent(TagComponent).Tag = imgui.input_text("##Tag", tag, 256)
@@ -99,6 +102,24 @@ class SceneHierarchyPanel(Panel):
             imgui.pop_item_width()
 
             self.DrawComponent("Transform", entity, TransformComponent, ComponentDrawer.Transform)
+
+            if (self.__CopiedTransform or self.__CopiedComponent) and \
+                imgui.begin_popup_context_window(popup_flags=imgui.POPUP_NO_OPEN_OVER_ITEMS|imgui.POPUP_MOUSE_BUTTON_RIGHT):
+
+                if self.__CopiedTransform and imgui.menu_item("Paste Transform")[0]: # type: ignore
+                    transform = entity.GetComponent(TransformComponent)
+                    transform.SetTranslation(self.__CopiedTransform.Translation)
+                    transform.SetRotation(self.__CopiedTransform.Rotation)
+                    transform.SetScale(self.__CopiedTransform.Scale)
+                    self.__CopiedTransform = None
+
+                if self.__CopiedComponent and imgui.menu_item("Paste Component")[0]: # type: ignore
+                    componentType = type(self.__CopiedComponent) # type: ignore
+                    if entity.HasComponent(componentType): entity.RemoveComponent(componentType) # type: ignore
+                    entity.AddComponentInstance(self.__CopiedComponent) # type: ignore
+                    self.__CopiedComponent = None
+
+                imgui.end_popup()
 
     def DrawComponent(
         self, name: str, entity: Entity, componentType: Type[CTV], UIFunction: Callable[[Entity, CTV], None]
@@ -160,23 +181,3 @@ class SceneHierarchyPanel(Panel):
 
         # Note you will be able to paste the component even after the original is deleted
         if removeComponent: entity.RemoveComponent(componentType)
-
-        if imgui.begin_popup_context_window(popup_flags=imgui.POPUP_NO_OPEN_OVER_ITEMS|imgui.POPUP_MOUSE_BUTTON_RIGHT):
-            if not (self.__CopiedTransform or self.__CopiedComponent):
-                imgui.end_popup()
-                return
-
-            if self.__CopiedTransform and imgui.menu_item("Paste Transform")[0]: # type: ignore
-                transform = entity.GetComponent(TransformComponent)
-                transform.SetTranslation(self.__CopiedTransform.Translation)
-                transform.SetRotation(self.__CopiedTransform.Rotation)
-                transform.SetScale(self.__CopiedTransform.Scale)
-                self.__CopiedTransform = None
-
-            if self.__CopiedComponent and imgui.menu_item("Paste Component")[0]: # type: ignore
-                componentType = type(self.__CopiedComponent) # type: ignore
-                if entity.HasComponent(componentType): entity.RemoveComponent(componentType)
-                entity.AddComponentInstance(self.__CopiedComponent) # type: ignore
-                self.__CopiedComponent = None
-
-            imgui.end_popup()

@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Protocol, runtime_checkable
+from typing import Callable, Dict, Protocol
 
 # This just shifts 1 to i th BIT
 def BIT(i: int) -> int:
@@ -39,18 +39,24 @@ class Event:
     def IsInCategory(self, category: int) -> bool: return bool(self.CategoryFlags & category)
     def __repr__(self) -> str: return self.ToString()
 
+class SupportsEvents(Protocol):
+    @property
+    def EventType(self) -> int: ...
+    @property
+    def CategoryFlags(self) -> int: ...
+
 class EventDispatcher:
-    __Map: Dict[int, Callable[[Event], bool]]
+    __Map: Dict[int, Callable[[SupportsEvents], bool]]
 
     @staticmethod
     # Just a placeholder function if nothing matches
     # C005 (See GeneralConventions.txt)
-    def DoNothing(_: Event) -> bool: return False
+    def DoNothing(_: SupportsEvents) -> bool: return False
 
     def __init__(self) -> None:
         self.__Map = {}
 
-    def AddHandler(self, eventType: int, handler: Callable[[Event], bool]) -> None:
+    def AddHandler(self, eventType: int, handler: Callable[[SupportsEvents], bool]) -> None:
         self.__Map[eventType] = handler
 
     def Dispatch(self, event: Event) -> bool:

@@ -35,7 +35,9 @@ class EditorLayer(Overlay):
     __Renderer: Renderer
 
     __CurrentProject: Project
-    __CurrentScene: Scene
+
+    __ActiveScene: Scene
+    __EditorScene: Scene
 
     __ViewportBounds: List[ImVec2]
     __ViewportSize: ImVec2
@@ -76,7 +78,9 @@ class EditorLayer(Overlay):
     def OnInitialize(self) -> None:
         self.__dt = 0.00001
         self.__CurrentProject = Project(Path("DefaultProject"), "DefaultProject")
-        self.__CurrentScene = self.__CurrentProject.GetScene(0)
+        self.__EditorScene = self.__CurrentProject.GetScene(0)
+
+        self.__ActiveScene = self.__EditorScene
 
         self.__ViewportBounds = [
             ImVec2(0, 0),
@@ -85,6 +89,9 @@ class EditorLayer(Overlay):
 
         self.__ViewportFocused = self.__ViewportHovered = False
         self.__IsBlocking = False
+
+        # Bind the events
+        self._EventDispatcher.AddHandler(EventType.KeyPressed, self.OnKeyPress) # type: ignore
 
         # Task Bar Icons Loading
         self.__TaskBarPlayIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\PlayButton.png"    ))
@@ -96,21 +103,81 @@ class EditorLayer(Overlay):
         self.__Panels = PanelManager()
 
         sceneHierarchyPanel = SceneHierarchyPanel()
-        sceneHierarchyPanel.SetContext(self.__CurrentScene)
+        sceneHierarchyPanel.SetContext(self.__ActiveScene)
         self.__Panels.Add(sceneHierarchyPanel)
 
     def OnStart(self) -> None: pass
+
+    def OnKeyPress(self, event: KeyPressedEvent) -> bool:
+        control = Input.IsKeyPressed(KeyCodes.LEFT_CONTROL) or Input.IsKeyPressed(KeyCodes.RIGHT_CONTROL)
+        shift   = Input.IsKeyPressed(KeyCodes.LEFT_SHIFT)   or Input.IsKeyPressed(KeyCodes.RIGHT_SHIFT)
+
+        if not control and not shift:
+            if event.KeyCode == KeyCodes.F5:
+                if _SceneStateManager.IsEditing():
+                    self.__PlayScene()
+                    return True
+                
+                if _SceneStateManager.IsPaused():
+                    self.__ResumeScene()
+                    return True
+            
+            if event.KeyCode == KeyCodes.F6 and _SceneStateManager.IsPlaying():
+                self.__PauseScene()
+                return True
+            
+            if event.KeyCode == KeyCodes.F10 and _SceneStateManager.IsPaused():
+                self.__StepThroughScene()
+                return True
+            
+        elif control and not shift:
+            # Ctrl+Q
+            if event.KeyCode == KeyCodes.Q:
+                self.__AppOnEventFunction(WindowCloseEvent())
+                return True
+            
+            # Ctrl+X / Ctrl+Delete
+            if event.KeyCode in [KeyCodes.X, KeyCodes.DELETE]:
+                selection = self.__Panels.GetPanelOfType(SceneHierarchyPanel).SelectionContext # type: ignore
+                if selection: self.__ActiveScene.DestroyEntity(selection)
+                self.__Panels.GetPanelOfType(SceneHierarchyPanel).SetSelectionContext(None) # type: ignore
+                return True
+            
+        elif not control and shift:
+            # Shift+F5
+            if event.KeyCode == KeyCodes.F5 and (_SceneStateManager.IsPlaying() or _SceneStateManager.IsPaused()):
+                self.__StopScene()
+                return True
+            
+            # Shift+D (Duplicates the entity)
+            if event.KeyCode == KeyCodes.D:
+                selection = self.__Panels.GetPanelOfType(SceneHierarchyPanel).SelectionContext # type: ignore
+                if selection: self.__ActiveScene.DefferedDuplicateEntity(selection)
+                return True
+            
+            # Shift+N (Creates a new entity)
+            if event.KeyCode == KeyCodes.N:
+                self.__ActiveScene.CreateEntity("New Entity")
+                return True
+
+        elif control and shift:
+            # Shift+Ctrl+F5
+            if event.KeyCode == KeyCodes.F5 and (_SceneStateManager.IsPlaying() or _SceneStateManager.IsPaused()):
+                self.__RestartScene()
+                return True
+
+        return False
 
     def OnUpdate(self, dt: float) -> None:
         self.__dt = dt
 
         if _SceneStateManager.IsEditing() or _SceneStateManager.IsPaused():
-            self.__CurrentScene.OnUpdateEditor(dt)
+            self.__ActiveScene.OnUpdateEditor(dt)
         elif _SceneStateManager.IsPlaying():
-            self.__CurrentScene.OnUpdateRuntime(dt)
+            self.__ActiveScene.OnUpdateRuntime(dt)
 
         rendererTimer = Timer("Application::Layer::Render")
-        self.__Renderer.BeginScene(self.__CurrentScene)
+        self.__Renderer.BeginScene(self.__ActiveScene)
         self.__Renderer.Resize(int(self.__ViewportSize[0]), int(self.__ViewportSize[1]))
         self.__Renderer.Render()
         self.__Renderer.EndScene()
@@ -171,55 +238,28 @@ class EditorLayer(Overlay):
 
                 imgui.end_menu()
 
-    def ShowViewport(self) -> None:
-        imgui.push_style_var(imgui.STYLE_WINDOW_PADDING, ImVec2(0.0, 0.0))
-        with imgui.begin("Viewport"):
-            self.__ViewportSize = imgui.get_content_region_available()
-
-            viewportMinRegion = imgui.get_window_content_region_min()
-            viewportMaxRegion = imgui.get_window_content_region_max()
-            viewportOffset    = imgui.get_window_position()
-
-            self.__ViewportBounds = [
-                ImVec2(
-                    viewportOffset[0] + viewportMinRegion[0],
-                    viewportOffset[1] + viewportMinRegion[1]
-                ),
-                ImVec2(
-                    viewportOffset[0] + viewportMaxRegion[0],
-                    viewportOffset[1] + viewportMaxRegion[1]
-                )
-            ]
-
-            self.__ViewportFocused = imgui.is_window_focused()
-            self.__ViewportHovered = imgui.is_window_hovered()
-
-            self.__IsBlocking = not (self.__ViewportFocused or self.__ViewportHovered)
-            self.__EventBlockingFunction(self.__IsBlocking)
-
-            texture = self.__Renderer.Framebuffer.GetColorAttachment(0)
-            imgui.image(texture.RendererID, *self.__ViewportSize)
-        
-        imgui.pop_style_var()
-
     #--------------------- Start Block: Viewport ---------------------
     def __PlayScene(self) -> None:
-        # Create a copy of the scene
-        self.__CurrentScene.OnStart()
+        # TODO: Create a copy of the scene
+        # Probabaly add SceneSerilizer.Copy() method
+        self.__Panels.GetPanelOfType(SceneHierarchyPanel).SetSelectionContext(None) # type: ignore
+
+        self.__ActiveScene.OnStart()
         _SceneStateManager.SwitchToPlay()
 
     def __PauseScene  (self) -> None: _SceneStateManager.SwitchToPause()
     def __ResumeScene (self) -> None: _SceneStateManager.SwitchToPlay()
 
     # Just updates the scene once
-    def __StepThroughScene(self) -> None: self.__CurrentScene.OnUpdateEditor(1/60)
+    def __StepThroughScene(self) -> None: self.__ActiveScene.OnUpdateEditor(self.__dt)
 
     def __RestartScene(self) -> None:
         self.__StopScene()
         self.__PlayScene()
 
     def __StopScene(self) -> None:
-        self.__CurrentScene.OnStop()
+        self.__Panels.GetPanelOfType(SceneHierarchyPanel).SetSelectionContext(None) # type: ignore
+        self.__ActiveScene.OnStop()
         _SceneStateManager.SwitchToEdit()
 
     def __ShowViewportToolbarButtons(self) -> None:
@@ -289,6 +329,37 @@ class EditorLayer(Overlay):
 
         imgui.pop_style_color(3)
         imgui.pop_style_var(3)
+
+    def ShowViewport(self) -> None:
+        imgui.push_style_var(imgui.STYLE_WINDOW_PADDING, ImVec2(0.0, 0.0))
+        with imgui.begin("Viewport"):
+            self.__ViewportSize = imgui.get_content_region_available()
+
+            viewportMinRegion = imgui.get_window_content_region_min()
+            viewportMaxRegion = imgui.get_window_content_region_max()
+            viewportOffset    = imgui.get_window_position()
+
+            self.__ViewportBounds = [
+                ImVec2(
+                    viewportOffset[0] + viewportMinRegion[0],
+                    viewportOffset[1] + viewportMinRegion[1]
+                ),
+                ImVec2(
+                    viewportOffset[0] + viewportMaxRegion[0],
+                    viewportOffset[1] + viewportMaxRegion[1]
+                )
+            ]
+
+            self.__ViewportFocused = imgui.is_window_focused()
+            self.__ViewportHovered = imgui.is_window_hovered()
+
+            self.__IsBlocking = not (self.__ViewportFocused or self.__ViewportHovered)
+            self.__EventBlockingFunction(self.__IsBlocking)
+
+            texture = self.__Renderer.Framebuffer.GetColorAttachment(0)
+            imgui.image(texture.RendererID, *self.__ViewportSize)
+        
+        imgui.pop_style_var()
     #--------------------------- End Block ---------------------------
 
     def ShowContentBrowser(self) -> None:
