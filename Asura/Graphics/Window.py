@@ -1,4 +1,4 @@
-from ..Core import ASURA_VERSION_STR
+from ..Core import ASURA_VERSION_STR, Input
 from ..Utility import DataClass, Callable, AZ_DEBUG, AZ_CONFIG_STR, AZ_VSYNC, Tuple
 from ..Events  import *
 from ..Logging import CoreLogger
@@ -33,7 +33,6 @@ class Window:
             assert glfw.init(), CoreLogger.Critical("Can not intialize GLFW!")
 
             glfw.set_error_callback(Window.GLFWErrorEventHandler)
-
             Window.GLFWInitialized = True
 
         title: str = "{} - PI v{}".format(properties.Title, ASURA_VERSION_STR)
@@ -55,6 +54,9 @@ class Window:
         glfw.set_mouse_button_callback ( self.__NativeHandle, Window.MouseButtonEventHandler  )
         glfw.set_scroll_callback       ( self.__NativeHandle, Window.MouseScrollEventHandler  )
         glfw.set_cursor_pos_callback   ( self.__NativeHandle, Window.MouseMovedEventHandler   )
+
+        # Initialize the Input manager
+        Input.Init(self.__NativeHandle)
 
     def __del__(self) -> None:
         glfw.destroy_window(self.__NativeHandle)

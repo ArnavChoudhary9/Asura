@@ -2,6 +2,7 @@ from Asura import *
 
 from Panels import *
 
+# C002
 class _SceneStateManager:
     Edit  : int = 0
     Play  : int = 1
@@ -43,7 +44,6 @@ class EditorLayer(Overlay):
     __ViewportHovered: bool
 
     __IsBlocking: bool
-    __MousePosition: Tuple[float, float]
 
     # Task Bar Icons
     __TaskBarPlayIcon    : Texture
@@ -85,9 +85,6 @@ class EditorLayer(Overlay):
 
         self.__ViewportFocused = self.__ViewportHovered = False
         self.__IsBlocking = False
-        self.__MousePosition = (0, 0)
-
-        self._EventDispatcher.AddHandler(EventType.MouseMoved, self.OnMouseMove) # type: ignore
 
         # Task Bar Icons Loading
         self.__TaskBarPlayIcon    = LoadImageAsTexture(Path( "Tarka\\Resources\\Icons\\ViewportTaskbar\\PlayButton.png"    ))
@@ -101,8 +98,6 @@ class EditorLayer(Overlay):
         sceneHierarchyPanel = SceneHierarchyPanel()
         sceneHierarchyPanel.SetContext(self.__CurrentScene)
         self.__Panels.Add(sceneHierarchyPanel)
-
-    def OnMouseMove(self, event: MouseMovedEvent) -> None: self.__MousePosition = event.OffsetX, event.OffsetY
 
     def OnStart(self) -> None: pass
 
@@ -311,9 +306,10 @@ class EditorLayer(Overlay):
 
             if self.__IsBlocking: return
 
+            mousePosition = Input.GetMousePosition()
             imgui.text("Relative mouse position: {}, {}".format(
-                self.__MousePosition[0] - self.__ViewportBounds[0][0],
-                self.__MousePosition[1] - self.__ViewportBounds[0][1]
+                mousePosition[0] - self.__ViewportBounds[0][0],
+                mousePosition[1] - self.__ViewportBounds[0][1]
             ))
 
     def OnGUIEnd(self) -> None:

@@ -40,3 +40,10 @@
 * Writtin README.md
 
 > All the tests are passing and the engine is in working state.
+
+## 30-04-2024
+
+* Added Vector3 controls in GUILibrary.
+* Made Transform editor in Properties panel.
+
+> All the tests are passing and the engine is in working state.
