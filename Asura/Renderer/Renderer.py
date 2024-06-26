@@ -2,6 +2,15 @@ from ..Graphics import *
 from ..Utility.Math import Math
 from ..Scene import *
 
+from .Camera import *
+
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class RenderData:
+    Scene: Scene
+    Camera: Camera
+
 class Renderer:
     __Width: int
     __Height: int
@@ -9,7 +18,7 @@ class Renderer:
     __Framebuffer: SupportsFramebuffer
 
     __RenderCommandList: RenderCommandList
-    __Scene: Scene
+    __RenderData: RenderData
 
     def __init__(self, width: int, height: int) -> None:
         self.__Width = width
@@ -42,14 +51,15 @@ class Renderer:
     def Resize(self, width: int, height: int) -> None:
         self.__RenderCommandList.AddCommand(RenderCommands.Resize, width, height)
         self.__Framebuffer.Resize(width, height)
+        self.__RenderData.Camera.AspectRatio = width / height
 
-    def BeginScene(self, scene: Scene) -> None:
+    def BeginScene(self, scene: Scene, camera: Camera) -> None:
         commandList = None
         while not commandList:
             commandList = RenderCommands.GetFreeCommandList()
 
         self.__RenderCommandList = commandList
-        self.__Scene = scene
+        self.__RenderData = RenderData(scene, camera)
         self.__Framebuffer.Bind()
 
     def Render(self) -> None:
@@ -59,3 +69,5 @@ class Renderer:
     def EndScene(self) -> None:
         self.__RenderCommandList.Execute()
         self.__Framebuffer.Unbind()
+
+        del self.__RenderData

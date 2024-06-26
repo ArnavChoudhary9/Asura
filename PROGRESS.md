@@ -45,5 +45,7 @@
 
 * Added Vector3 controls in GUILibrary.
 * Made Transform editor in Properties panel.
+* Added Input Manager
+* Added Shortcuts for Editor
 
 > All the tests are passing and the engine is in working state.

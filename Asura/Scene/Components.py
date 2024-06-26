@@ -1,5 +1,6 @@
 from ..Utility import UUID, Dict
 from ..Logging import ClientLoggers
+from .SceneCamera import SceneCamera, ProjectionTypes
 
 from typing import TypeVar
 import pyrr
@@ -83,6 +84,38 @@ class TransformComponent:
         self.Translation = data["Translation"]
         self.Rotation    = data["Rotation"]
         self.Scale       = data["Scale"]
+
+# They are only applied to secective Entities
+class CameraComponent:
+    Camera: SceneCamera
+
+    Primary: bool
+    FixedAspectRatio: bool
+
+    def __init__(self, camera: SceneCamera, isPrimary: bool=True, isFixedAspectRatio: bool=False) -> None:
+        self.Camera = camera
+        self.Primary = isPrimary
+        self.FixedAspectRatio = isFixedAspectRatio
+
+    def __bool__(self) -> bool: return self.Primary
+
+    def Copy(self):
+        component = CameraComponent(SceneCamera(self.Camera.ProjectionType), self.Primary, self.FixedAspectRatio)
+        component.Camera.CameraObject.AspectRatio = self.Camera.CameraObject.AspectRatio
+        return component
+    
+    def Serialize(self) -> Dict[str, Dict[str, int]]:
+        return {"Camera": {
+            "ProjectionType": self.Camera.ProjectionType.value,
+            "Primary": self.Primary,
+            "FixedAspectRatio": self.FixedAspectRatio
+        }}
+    
+    def Deserialize(self, data: Dict[str, Dict[str, int]]) -> None:
+        cameraDict = data["Camera"]
+        self.Camera.SetProjectionType(ProjectionTypes(cameraDict["ProjectionType"]))
+        self.Primary = bool(data["Primary"])
+        self.FixedAspectRatio = bool(data["FixedAspectRatio"])
 
 # CTV = ComponentTypeVar
 CTV = TypeVar("CTV",

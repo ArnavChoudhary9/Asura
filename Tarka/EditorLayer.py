@@ -34,6 +34,8 @@ class EditorLayer(Overlay):
     __EventBlockingFunction: Callable[[bool], None]
     __Renderer: Renderer
 
+    __EditorCamera: EditorCamera
+
     __CurrentProject: Project
 
     __ActiveScene: Scene
@@ -72,6 +74,9 @@ class EditorLayer(Overlay):
         # This part of code is run after self.OnInitialize(),
         # so self.__Renderer will not be defined to get the dimentions
         self.__ViewportSize = ImVec2(*dimentions)
+
+        aspectRatio = dimentions[0] / dimentions[1]
+        self.__EditorCamera = EditorCamera(60, aspectRatio)
 
         _SceneStateManager.Init()
 
@@ -130,6 +135,10 @@ class EditorLayer(Overlay):
                 self.__StepThroughScene()
                 return True
             
+            if event.KeyCode == KeyCodes.HOME:
+                self.__EditorCamera._Reset()
+                return True
+            
         elif control and not shift:
             # Ctrl+Q
             if event.KeyCode == KeyCodes.Q:
@@ -171,13 +180,16 @@ class EditorLayer(Overlay):
     def OnUpdate(self, dt: float) -> None:
         self.__dt = dt
 
+        if self.__ViewportFocused: self.__EditorCamera.OnUpdate(dt)
+
+        renderCamera = self.__EditorCamera
         if _SceneStateManager.IsEditing() or _SceneStateManager.IsPaused():
             self.__ActiveScene.OnUpdateEditor(dt)
         elif _SceneStateManager.IsPlaying():
             self.__ActiveScene.OnUpdateRuntime(dt)
 
         rendererTimer = Timer("Application::Layer::Render")
-        self.__Renderer.BeginScene(self.__ActiveScene)
+        self.__Renderer.BeginScene(self.__ActiveScene, renderCamera)
         self.__Renderer.Resize(int(self.__ViewportSize[0]), int(self.__ViewportSize[1]))
         self.__Renderer.Render()
         self.__Renderer.EndScene()
