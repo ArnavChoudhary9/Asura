@@ -22,6 +22,10 @@ class ComponentDrawer:
             component.SetRotation(newR)
             component.SetScale(newS)
 
+    @staticmethod
+    def Mesh(entity: Entity, component: MeshComponent) -> None:
+        pass
+
 class SceneHierarchyPanel(Panel):
     __Context: Scene | None
     __SelectionContext: Entity | None
@@ -97,11 +101,18 @@ class SceneHierarchyPanel(Panel):
             if imgui.button("Add Component"): imgui.open_popup("AddComponent")
 
             if imgui.begin_popup("AddComponent"):
+                if imgui.begin_menu("Mesh"):
+                    if imgui.menu_item("Empty Mesh")[0]: # type: ignore
+                        self.__SelectionContext.AddComponent(MeshComponent) # type: ignore
+                        imgui.close_current_popup()
+
+                    imgui.end_menu()
                 imgui.end_popup()
 
             imgui.pop_item_width()
 
-            self.DrawComponent("Transform", entity, TransformComponent, ComponentDrawer.Transform)
+            self.DrawComponent( "Transform" , entity , TransformComponent , ComponentDrawer.Transform )
+            self.DrawComponent( "Mesh"      , entity , MeshComponent      , ComponentDrawer.Mesh      )
 
             if (self.__CopiedTransform or self.__CopiedComponent) and \
                 imgui.begin_popup_context_window(popup_flags=imgui.POPUP_NO_OPEN_OVER_ITEMS|imgui.POPUP_MOUSE_BUTTON_RIGHT):
@@ -124,21 +135,22 @@ class SceneHierarchyPanel(Panel):
     def DrawComponent(
         self, name: str, entity: Entity, componentType: Type[CTV], UIFunction: Callable[[Entity, CTV], None]
     ) -> None:
+        if not entity.HasComponent(componentType): return
+        
         flags  = imgui.TREE_NODE_DEFAULT_OPEN
         flags |= imgui.TREE_NODE_FRAMED
         flags |= imgui.TREE_NODE_SPAN_AVAILABLE_WIDTH
         flags |= imgui.TREE_NODE_ALLOW_ITEM_OVERLAP
         flags |= imgui.TREE_NODE_FRAME_PADDING
 
-        if entity.HasComponent(componentType):
-            component = entity.GetComponent(componentType)
-            contentRegionAvailable = imgui.get_content_region_available()
+        component = entity.GetComponent(componentType)
+        contentRegionAvailable = imgui.get_content_region_available()
 
-            imgui.push_style_var(imgui.STYLE_FRAME_PADDING, (4, 4))
-            lineHeight = 26
-            imgui.separator()
-            isOpen = imgui.tree_node(name, flags)
-            imgui.pop_style_var()
+        imgui.push_style_var(imgui.STYLE_FRAME_PADDING, (4, 4))
+        lineHeight = 26
+        imgui.separator()
+        isOpen = imgui.tree_node(name, flags)
+        imgui.pop_style_var()
 
         imgui.same_line(contentRegionAvailable[0] - lineHeight * 0.5)
         if imgui.button("+", lineHeight, lineHeight): imgui.open_popup("ComponentSettings")

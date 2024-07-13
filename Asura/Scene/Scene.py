@@ -3,6 +3,7 @@ from .Entity import Entity
 from .Components import *
 
 import esper
+from typing import Type
 
 class Scene:
     __Name: str
@@ -50,6 +51,9 @@ class Scene:
             newEntity.AddComponentInstance(component.Copy()) # type: ignore
 
         return newEntity
+    
+    def GetEntitysWithComponent(self, component: Type[CTV]) -> List[Entity]:
+        return [Entity(entity, self) for (entity, _) in self.__EntityRegistry.get_component(component)]
     
     def DefferedDuplicateEntity(self, entity: Entity) -> None: self.__ToDuplicate.add(entity)    
     def DestroyEntity(self, entity: Entity) -> None: self.__ToDelete.add(entity)

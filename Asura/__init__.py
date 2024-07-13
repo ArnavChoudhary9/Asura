@@ -1,4 +1,5 @@
 from .Application import *
+from .Assets      import *
 from .Core        import *
 from .Events      import *
 from .Graphics    import *

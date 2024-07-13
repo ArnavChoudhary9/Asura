@@ -64,7 +64,9 @@ class Renderer:
 
     def Render(self) -> None:
         self.__RenderCommandList.AddCommand(RenderCommands.Clear, 0.3, 0.65, 0.75)
-        self.__Framebuffer.ClearAttachment(1, Math.PythonInt32ToBytes(0))
+        self.__Framebuffer.ClearAttachment(1, Math.PythonInt32ToBytes(0)) # 0 is not a valid esper ID.
+
+        # for entity in self.__RenderData.Scene.GetEntitysWithComponent():
 
     def EndScene(self) -> None:
         self.__RenderCommandList.Execute()

@@ -49,3 +49,9 @@
 * Added Shortcuts for Editor
 
 > All the tests are passing and the engine is in working state.
+
+## 26-06-2024
+
+* Added Camera Systems
+
+> All the tests are passing and the engine is in working state.

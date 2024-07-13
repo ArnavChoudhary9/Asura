@@ -116,8 +116,13 @@ class CameraComponent:
         self.Camera.SetProjectionType(ProjectionTypes(cameraDict["ProjectionType"]))
         self.Primary = bool(data["Primary"])
         self.FixedAspectRatio = bool(data["FixedAspectRatio"])
+class MeshComponent:
+    def Copy(self):
+        component = MeshComponent()
+        return component
 
 # CTV = ComponentTypeVar
 CTV = TypeVar("CTV",
-        IDComponent, TagComponent, TransformComponent
+        IDComponent, TagComponent, TransformComponent,
+        CameraComponent, MeshComponent
     )    
